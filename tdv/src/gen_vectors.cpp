@@ -41,7 +41,7 @@ void writeVectors(const string& oFileName)
     }
 
     if (humanReadable)
-        fReprs <<  meaningList.setw(2) << std::endl;
+        fReprs <<  std::setw(2) << meaningList << std::endl;
     else
         fReprs << meaningList;
 

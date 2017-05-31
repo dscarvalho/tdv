@@ -14,10 +14,10 @@ clean:
 	rm -f *.o service gen_examples
 
 gen_vectors: stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_vectors.o
-	$(CXX) -L ../lib  stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_vectors.o -o gen_vectors
+	$(CXX) -L. -L"$(CURDIR)/../lib"  stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_vectors.o -o gen_vectors
 
 service: stringutils.o config.o wiktdb.o sparsearray.o vectorize.o service.o
-	$(CXX) -L ../lib -lcppcms stringutils.o config.o wiktdb.o sparsearray.o vectorize.o service.o -o service
+	$(CXX) -L. -L"$(CURDIR)/../lib" -Wl,-rpath,"$(CURDIR)/../lib" -lcppcms stringutils.o config.o wiktdb.o sparsearray.o vectorize.o service.o -o service
 
 gen_vectors.o: gen_vectors.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c gen_vectors.cpp -o gen_vectors.o

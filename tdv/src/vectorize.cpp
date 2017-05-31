@@ -710,7 +710,7 @@ SparseArray MeaningExtractor::getVector(const string& term, const string& pos, c
             {
                 if (wiktdb->exists(inputCtxWord))
                 {
-                    vector<const json> inputCtxMeanings;
+                    vector<json> inputCtxMeanings;
                     bool skip = false;
 
                     for (const string& lang : MeaningExtractor::config.languages)
