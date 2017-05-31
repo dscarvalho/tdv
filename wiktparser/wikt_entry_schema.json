@@ -1,0 +1,264 @@
+{"$schema":"http://json-schema.org/draft-04/schema#",
+    "title": "Wiktionary term entry",
+    "description": "A JSON object representing a wiktionary term entry",
+    "type":"object",
+    "required": ["wikid", "title"]
+    "properties":{
+        "wikid":{
+            "description":"Page ID in the Wiktionary database dump.",
+            "type":"integer"
+        },
+        "title":{
+            "description":"Page title (term identifier) in the Wiktionary database dump. The term string itself.",
+            "type":"string"
+        },
+        "redirect":{
+            "description":"If the term is a redirect to another page in Wiktionary: a tuple of strings, the first one being the redirection target, followed a number of redirection options, e.g., language.",
+            "type":"array",
+            "items": {
+                "description": "Redirect description element: the first one is the target term.",
+                "type": "string",
+            }
+        },
+        "langs":{
+            "description": "Dictionary of language entries for this term",
+            "type":"object",
+            "minProperties": 1,
+            "properties":{
+                "<LANG_NAME>":{
+                    "description": "Full language name (capitalized) of the language for this entry, e.g., 'English'",
+                    "type":"object",
+                    "properties":{
+                        "etymology":{
+                            "description": "Etymology entry for this term in this language.",
+                            "type":"object",
+                            "properties":{
+                                "descr":{
+                                    "description": "Etymology textual description.",
+                                    "type":"string"
+                                },
+                                "attrs":{
+                                    "description": "List of Wiktionary attributes associated with this etymology entry.",
+                                    "type":"array",
+                                    "items":{
+                                        "description": "Atribute entry: a tuple of size >= 2, in the format (<ATTR_NAME>, <VALUE>, <VALUE>, ...).",
+                                        "type":"array",
+                                        "items":{
+                                            "description": "Atribute tuple element. The first element is always the attribute name.",
+                                            "type":"string"
+                                        }
+                                    }
+                                },
+                                "morph_links":{
+                                    "description": "List of Wiktionary links in the etymology description.",
+                                    "type":"array",
+                                    "items":{
+                                        "description": "Term (title) of the Wiktionary linked entry",
+                                        "type":"string",
+                                    }
+                                }
+                            }
+                        },
+                        "translations":{
+                            "description": "Dictionary of part-of-speech entries for the available translations",
+                            "type":"object",
+                            "minProperties": 1,
+                            "properties":{
+                                "<POS_NAME>":{
+                                    "description": "List of translations, categorized by POS: Wiktionary name of the part-of-speech (lowercase), e.g., 'adjective', 'noun'",
+                                    "type":"array",
+                                    "items":{
+                                        "description": "List of translations, one for each language, for this POS",
+                                        "type":"object",
+                                        "properties":{
+                                            "meaning":{
+                                                "description": "Meaning (sense) of this translation, as a textual description in the source language",
+                                                "type":"string"
+                                            },
+                                            "transl":{
+                                                "description": "Translation sense entry",
+                                                "type":"object",
+                                                "properties":{
+                                                    "<LANG_NAME>":{
+                                                        "description": "Full language name (capitalized) of the language for this entry, e.g., 'Japanese'",
+                                                        "type":"array",
+                                                        "items":{
+                                                            "description": "List of translated terms for this language",
+                                                            "type":"array",
+                                                            "items":{
+                                                                "description": "Translated term",
+                                                                "type":"string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "meanings":{
+                            "description": "Set of meanings (senses) for this term, categorized by part-of-speech.",
+                            "type":"object",
+                            "minProperties": 1,
+                            "properties":{
+                                "<POS_NAME>":{
+                                    "description":"List of meanings for this POS: Wiktionary name of the part-of-speech (lowercase), e.g., 'adjective', 'noun'.",
+                                    "type":"array",
+                                    "items":{
+                                        "description": "Meaning (sense) entry.",
+                                        "type":"object",
+                                        "properties":{
+                                            "meaning":{
+                                                "description": "Textual description of this meaning.",
+                                                "type":"string"
+                                            },
+                                            "attrs":{
+                                                "description": "List of Wiktionary attributes associated with this meaning entry.",
+                                                "type":"array",
+                                                "items":{
+                                                    "description": "Atribute entry: a tuple of size >= 2, in the format (<ATTR_NAME>, <VALUE>, <VALUE>, ...).",
+                                                    "type":"array",
+                                                    "items":{
+                                                        "description": "Atribute tuple element. The first element is always the attribute name.",
+                                                        "type":"string"
+                                                    }
+                                                }
+                                            },
+                                            "links":{
+                                                "description": "List of Wiktionary links in the meaning description.",
+                                                "type":"array",
+                                                "items":{
+                                                    "description": "Term (title) of the Wiktionary linked entry",
+                                                    "type":"string",
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "synonyms":{
+                            "description":"Set of synonyms of this term, categorized by part-of-speech.",
+                            "type":"object",
+                            "minProperties": 1,
+                            "properties":{
+                                "<POS_NAME>":{
+                                    "description": "List of synonyms for this POS: Wiktionary name of the part-of-speech (lowercase), e.g., 'adjective', 'noun'.",
+                                    "type":"array",
+                                    "items":{
+                                        "description": "Synonym entry.",
+                                        "type":"object",
+                                        "properties":{
+                                            "meaning":{
+                                                "description": "Textual description of this synonym.",
+                                                "type":"string"
+                                            },
+                                            "links":{
+                                                "description": "List of Wiktionary links in the synonym description.",
+                                                "type":"array",
+                                                "items":{
+                                                    "description": "Term (title) of the Wiktionary linked entry",
+                                                    "type":"string",
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "antonyms":{
+                            "description":"Set of antonyms of this term, categorized by part-of-speech.",
+                            "type":"object",
+                            "minProperties": 1,
+                            "properties":{
+                                "<POS_NAME>":{
+                                    "description": "List of antonyms for this POS: Wiktionary name of the part-of-speech (lowercase), e.g., 'adjective', 'noun'.",
+                                    "type":"array",
+                                    "items":{
+                                        "description": "Antonym entry.",
+                                        "type":"object",
+                                        "properties":{
+                                            "meaning":{
+                                                "description": "Textual description of this antonym.",
+                                                "type":"string"
+                                            },
+                                            "links":{
+                                                "description": "List of Wiktionary links in the antonym description.",
+                                                "type":"array",
+                                                "items":{
+                                                    "description": "Term (title) of the Wiktionary linked entry",
+                                                    "type":"string",
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        "hypernyms":{
+                            "description":"Set of hypernyms of this term, categorized by part-of-speech.",
+                            "type":"object",
+                            "minProperties": 1,
+                            "properties":{
+                                "<POS_NAME>":{
+                                    "description": "List of hypernyms for this POS: Wiktionary name of the part-of-speech (lowercase), e.g., 'adjective', 'noun'.",
+                                    "type":"array",
+                                    "items":{
+                                        "description": "Hypernym entry.",
+                                        "type":"object",
+                                        "properties":{
+                                            "meaning":{
+                                                "description": "Textual description of this hypernym.",
+                                                "type":"string"
+                                            },
+                                            "links":{
+                                                "description": "List of Wiktionary links in the hypernym description.",
+                                                "type":"array",
+                                                "items":{
+                                                    "description": "Term (title) of the Wiktionary linked entry",
+                                                    "type":"string",
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        "abbreviations":{
+                            "description":"Set of abbreviations of this term, categorized by part-of-speech.",
+                            "type":"object",
+                            "minProperties": 1,
+                            "properties":{
+                                "<POS_NAME>":{
+                                    "description": "List of abbreviations for this POS: Wiktionary name of the part-of-speech (lowercase), e.g., 'adjective', 'noun'.",
+                                    "type":"array",
+                                    "items":{
+                                        "description": "Abbreviation entry.",
+                                        "type":"object",
+                                        "properties":{
+                                            "meaning":{
+                                                "description": "Textual description of this abbreviation.",
+                                                "type":"string"
+                                            },
+                                            "links":{
+                                                "description": "List of Wiktionary links in the abbreviation description.",
+                                                "type":"array",
+                                                "items":{
+                                                    "description": "Term (title) of the Wiktionary linked entry",
+                                                    "type":"string",
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
