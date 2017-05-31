@@ -6,14 +6,14 @@ all: service gen_examples
 clean:
 	rm -f *.o service gen_examples
 
-gen_examples: stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_examples.o
-	$(CXX) -L ../lib  stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_examples.o -o gen_examples
+gen_vectors: stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_vectors.o
+	$(CXX) -L ../lib  stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_vectors.o -o gen_vectors
 
 service: stringutils.o config.o wiktdb.o sparsearray.o vectorize.o service.o
 	$(CXX) -L ../lib -lcppcms stringutils.o config.o wiktdb.o sparsearray.o vectorize.o service.o -o service
 
-gen_examples.o: gen_examples.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -c gen_examples.cpp -o gen_examples.o
+gen_vectors.o: gen_vectors.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -c gen_vectors.cpp -o gen_vectors.o
 
 service.o: service.h service.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c service.cpp -o service.o
