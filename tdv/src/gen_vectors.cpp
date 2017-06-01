@@ -45,6 +45,7 @@ void writeVectors(const string& oFileName)
     else
         fReprs << meaningList;
 
+    fReprs.flush();
     fReprs.close();
 }
 
