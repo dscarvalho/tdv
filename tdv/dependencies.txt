@@ -1,0 +1,7 @@
+cmake
+libpcre3-dev
+zlib1g-dev
+libgcrypt11-dev
+libicu-dev
+python
+
