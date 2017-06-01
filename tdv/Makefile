@@ -1,29 +1,32 @@
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	SERVICE_CMD = 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:./lib ./bin/service -c ./cfg/service.conf'
+endif
+ifeq ($(UNAME_S),Darwin)
+	SERVICE_CMD = 'DYLD_LIBRARY_PATH=$$DYLD_LIBRARY_PATH:./lib ./bin/service -c ./cfg/service.conf'
+endif
+
 all: build download_data
 
-setup_libs:
+lib:
 	./setup_libs.sh
 
-build: setup_libs
+build: lib
 	$(MAKE) -C src/
 	rm -rf build
 	mkdir -p build/bin
 	cp src/service build/bin/
-	cp run_service.sh build/
+	cp src/gen_vectors build/bin/
 	cp -r lib build/
 	cp -r cfg build/
-	mkdir build/data
+	mkdir -p build/data
 
 	echo '#!/bin/bash' > build/run_service.sh
-	ifeq ($(UNAME_S),Linux)
-		echo 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./lib ./bin/service -c ./cfg/service.conf' >> build/run_service.sh
-	endif
-	ifeq ($(UNAME_S),Darwin)
-		echo 'DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:./lib ./bin/service -c ./cfg/service.conf' >> build/run_service.sh
-	endif
+	echo $(SERVICE_CMD) >> build/run_service.sh
+	
 
 download_data:
 	cd build/data
-	curl -O "http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_min.json.bz2"
-	bunzip2 enwiktdb_sorted_min.json.bz2
-	cd ../../
+	curl -o build/data/enwiktdb_sorted_min.json.bz2 "http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_min.json.bz2"
+	bunzip2 build/data/enwiktdb_sorted_min.json.bz2
 

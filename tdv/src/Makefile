@@ -8,7 +8,7 @@ endif
 
 INCLUDE = -I ../include/ -I ../include/cppcms/
 
-all: service gen_examples
+all: service gen_vectors
 
 clean:
 	rm -f *.o service gen_examples

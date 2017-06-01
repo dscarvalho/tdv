@@ -20,7 +20,7 @@ OUTPUT_BUFFER_DIV = 4  # 16 / 4 = 4M output buffer
 classes = ["prefix", "suffix", "infix", "affix", "interfix", "noun", "proper noun", "adjective", "pronoun", "adverb",
            "proverb", "letter", "verb", "conjunction", "determiner", "preposition", "postposition", "numeral", "number",
            "particle", "phrase", "interjection", "article", "abbreviation", "romanization", "initialism", "participle",
-           "contraction", "symbol", "punctuation mark"]
+           "contraction", "symbol", "punctuation mark", "idiom"]
 
 clsrgx = dict([(cls, re.compile(r"====?" + cls + "====?")) for cls in classes])
 
