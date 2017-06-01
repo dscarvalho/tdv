@@ -35,7 +35,7 @@ def main(args):
             selected.append(seldoc)
 
     print "Writing..."
-    with open(args.ifilepath.replace(".json", "") + "_" + langs[0].lower()[0:3] + ".json", "w") as filtered_file:
+    with open(args.ifilepath.replace(".json", "") + "_" + "-".join([lang.lower()[0:2] for lang in langs]) + ".json", "w") as filtered_file:
         json.dump(selected, filtered_file, indent=2)
 
 
