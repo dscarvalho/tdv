@@ -1,9 +1,9 @@
-all: setup_libs build download_data
+all: build download_data
 
 setup_libs:
 	./setup_libs.sh
 
-build:
+build: setup_libs
 	$(MAKE) -C src/
 	rm -rf build
 	mkdir -p build/bin
