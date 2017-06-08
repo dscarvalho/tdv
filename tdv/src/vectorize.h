@@ -17,6 +17,7 @@
 #include "stringutils.h"
 #include "config.h"
 
+
 bool distComparator(const std::pair<ulong, float>& a, const std::pair<ulong, float>& b);
 
 struct Example
@@ -32,6 +33,7 @@ class Meaning
     string term;
     string pos;
     string descr;
+    string lang;
     uint index;
     vector<string> context;
     vector<Example> examples; 
@@ -87,6 +89,7 @@ class MeaningExtractor
     static SparseArray getVector(const string& term, const string& pos, const vector<string>& context);
     static SparseArray getVector(const string& term, const string& pos, uint index);
     static SparseArray getVector(const json& meaningRef, const json& termRef, const string& pos);
+    static vector<ulong> getMeaningRefIds(const string& term, const string& pos);
     static vector<std::pair<ulong, float>> similar(const string& term, uint size, bool reversed);
     static vector<std::pair<ulong, float>> similar(const string& term, uint size, bool reversed, const string& pos);
     static vector<std::pair<ulong, float>> similar(const string& term, uint size, bool reversed, const string& pos, const vector<string>& context);
@@ -97,6 +100,8 @@ class MeaningExtractor
 
     static void idfWeak();
     static void markEffective();
+    static void joinTranslations();
+    static void translationVectorJoin(ulong translIdx, const Meaning& meaning, Meaning& translMeaning);
     static SparseArray effectiveRepr(const SparseArray& vec);
     static string stringRepr(const SparseArray& vec, const string separator, bool dense, bool named);
     static string stringRepr(Meaning meaning, const string separator, bool dense, bool named);

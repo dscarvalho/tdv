@@ -10,6 +10,9 @@
 #include <iostream>
 #include "service.h"
 
+extern vector<ReprOffsetBase> REPR_OFFSET_BASES;
+extern vector<string> REPR_OFFSET_BASE_NAMES;
+
 TDVService::TDVService(cppcms::service &srv): cppcms::application(srv)
 {
     dispatcher().assign("/similar",&TDVService::similar,this);
@@ -56,24 +59,6 @@ string TDVService::printRepr(SparseArray vec)
     std::stringbuf demoBuf;
     std::ostream demoStream(&demoBuf);
 
-    vector<ReprOffsetBase> reprOffsetBases({
-            ReprOffsetBase::weak, 
-            ReprOffsetBase::strong, 
-            ReprOffsetBase::context, 
-            ReprOffsetBase::synonym, 
-            ReprOffsetBase::hypernym, 
-            ReprOffsetBase::homonym, 
-            ReprOffsetBase::abbreviation, 
-            ReprOffsetBase::etymLink, 
-            ReprOffsetBase::prefix, 
-            ReprOffsetBase::suffix, 
-            ReprOffsetBase::confix, 
-            ReprOffsetBase::affix, 
-            ReprOffsetBase::stem 
-        });
-    vector<string> reprOffsetBaseNames({"WEAK", "STRONG", "CONTEXT", "SYNONYM", "HYPERNYM", "HOMONYM", "ABBREVIATION", 
-                                        "ETYM_LINK", "PREFIX", "SUFFIX", "CONFIX", "AFFIX", "STEM"});
-
     for (auto pair : vec)
     {
         ulong idx = pair.first;
@@ -85,12 +70,12 @@ string TDVService::printRepr(SparseArray vec)
         else
         {
             bool skip = false;
-            for (uint i = 0; i < reprOffsetBases.size(); i++)
+            for (uint i = 0; i < REPR_OFFSET_BASES.size(); i++)
             {
-                if (idx < wiktdb->size() * (reprOffsetBases[i] + 1))
+                if (idx < wiktdb->size() * (REPR_OFFSET_BASES[i] + 1))
                 {
                     ulong offset = idx % wiktdb->size();
-                    demoStream << reprOffsetBaseNames[i] << "(" << (*wiktdb)[offset]["title"] << "): " << pair.second << "<br/>" << std::endl;
+                    demoStream << REPR_OFFSET_BASE_NAMES[i] << "(" << (*wiktdb)[offset]["title"] << "): " << pair.second << "<br/>" << std::endl;
 
                     skip = true;
                     break;
@@ -187,100 +172,6 @@ void TDVService::similar()
     }
 }
 
-/*
-void TDVService::similar()
-{
-    string term = request().get("term");
-    string pos = request().get("pos");
-    string ctx = request().get("ctx");
-    string rev = request().get("rev");
-    bool reverse = (rev == "true");
-    vector<string> context;
-
-    if (ctx != "")
-        context = StringUtils::split(ctx, ",");
-
-    vector<std::pair<string, float>> simList;
-
-    if (wiktdb->exists(term))
-    {
-        const json& meaningPosRefs = (*wiktdb)[term][FLD_LANGS][MeaningExtractor::config.lang][FLD_MEANINGS];
-        json::const_iterator posBegin = meaningPosRefs.begin();
-        json::const_iterator posEnd = meaningPosRefs.end();
-
-        try
-        {
-            for (auto it = wiktdb->invIndex.begin(); it != wiktdb->invIndex.end(); ++it)
-            {
-                if ((*wiktdb)[it->second][FLD_LANGS].count(MeaningExtractor::config.lang) &&
-                    (*wiktdb)[it->second][FLD_LANGS][MeaningExtractor::config.lang].count(FLD_MEANINGS))
-                {
-                    const json& othMeaningPosRefs = (*wiktdb)[it->second][FLD_LANGS][MeaningExtractor::config.lang][FLD_MEANINGS];
-
-                    json::const_iterator othPosBegin = othMeaningPosRefs.begin();
-                    json::const_iterator othPosEnd = othMeaningPosRefs.end();
-
-                    if (pos == "")
-                    {
-                        for (auto posIt = posBegin; posIt != posEnd; ++posIt)
-                        {
-                            string termPos = string(posIt.key());
-
-                            for (auto othPosIt = othPosBegin; othPosIt != othPosEnd; ++othPosIt)
-                            {
-                                string othPos = string(othPosIt.key());
-                                simList.push_back(std::pair<string, float>(it->first, MeaningExtractor::similarity(term, termPos, it->first, othPos, context, 1.0)));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        simList.push_back(std::pair<string, float>(it->first, MeaningExtractor::similarity(term, pos, it->first, pos, context, 1.0)));
-                    }
-                }
-            }
-        }
-        catch (std::exception& e)
-        {
-            std::cout << "{\"!ERR\": \"Exception: " << e.what() << "\"}" << std::endl;
-            response().out() << "{\"!ERR\": \"Exception: " << e.what() << "\"}";
-        }
-    }
-    else
-    {
-        std::cout << "[]" << std::endl;
-        return;
-    }
-   
-    std::sort(simList.begin(), simList.end(), distComparator<string>);
-
-    json res = json::array();
-    for (uint i = 0; i < 20 && simList.back().second > 0.0; i++)
-    {
-        if (reverse)
-        {
-            auto pair = simList[i];
-            res.push_back(json({{"sim", pair.second}, {"term", pair.first}, {"pos", pos}}));
-        }
-        else
-        {
-            auto pair = simList.back();
-            res.push_back(json({{"sim", pair.second}, {"term", pair.first}, {"pos", pos}}));
-            simList.pop_back();
-        }
-
-    }
-
-    std::cout << "DBG(similar) 2: " << term << std::endl << std::flush;
-    std::cout << res << std::endl << std::flush;
-    
-    response().set_header("Access-Control-Allow-Origin", "*");
-    response().set_header("Access-Control-Allow-Credentials", "true");
-    
-    response().out() <<  res;
-}
-*/
-
 void TDVService::definition()
 {
     vector<string> definition = StringUtils::split(request().get("def"));
@@ -305,6 +196,10 @@ void TDVService::definition()
         for (auto pair : simList)
         {
             const Meaning& meaning = MeaningExtractor::reprCache[pair.first];
+
+            if(std::find(definition.begin(), definition.end(), meaning.term) != definition.end())
+                continue;
+
             res.push_back(json({{"sim", pair.second}, {"term", meaning.term}, {"pos", meaning.pos}, {"descr", meaning.descr}}));
         }
 

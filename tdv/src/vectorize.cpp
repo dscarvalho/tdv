@@ -9,22 +9,22 @@ vector<string> DECOMP_SINGLE_FIELDS({FLD_ETYM_PREFIX, FLD_ETYM_SUFFIX, FLD_ETYM_
 vector<string> DECOMP_MULTI_FIELDS({FLD_ETYM_CONFIX, FLD_ETYM_AFFIX});
 
 vector<ReprOffsetBase> REPR_OFFSET_BASES({
-            ReprOffsetBase::weak, 
-            ReprOffsetBase::strong, 
-            ReprOffsetBase::context, 
-            ReprOffsetBase::synonym, 
-            ReprOffsetBase::hypernym, 
-            ReprOffsetBase::homonym, 
-            ReprOffsetBase::abbreviation, 
-            ReprOffsetBase::etymLink, 
-            ReprOffsetBase::prefix, 
-            ReprOffsetBase::suffix, 
-            ReprOffsetBase::confix, 
-            ReprOffsetBase::affix, 
+            ReprOffsetBase::weak,
+            ReprOffsetBase::strong,
+            ReprOffsetBase::context,
+            ReprOffsetBase::synonym,
+            ReprOffsetBase::hypernym,
+            ReprOffsetBase::homonym,
+            ReprOffsetBase::abbreviation,
+            ReprOffsetBase::etymLink,
+            ReprOffsetBase::prefix,
+            ReprOffsetBase::suffix,
+            ReprOffsetBase::confix,
+            ReprOffsetBase::affix,
             ReprOffsetBase::stem,
             ReprOffsetBase::translation
         });
-vector<string> REPR_OFFSET_BASE_NAMES({"WEAK", "STRONG", "CONTEXT", "SYNONYM", "HYPERNYM", "HOMONYM", "ABBREVIATION", 
+vector<string> REPR_OFFSET_BASE_NAMES({"WEAK", "STRONG", "CONTEXT", "SYNONYM", "HYPERNYM", "HOMONYM", "ABBREVIATION",
                                         "ETYM_LINK", "PREFIX", "SUFFIX", "CONFIX", "AFFIX", "STEM", "TRANSLATION"});
 
 float TRANSL_MAX_INTERSECT_THRESH = 0.5;
@@ -849,6 +849,57 @@ SparseArray MeaningExtractor::getVector(const json& meaningRef, const json& term
     return vec;
 }
 
+vector<ulong> MeaningExtractor::getMeaningRefIds(const string& term, const string& pos)
+{
+    vector<ulong> meaningRefIds;
+    json termRef;
+
+    if (!findTerm(term, termRef))
+        return meaningRefIds;
+
+    for (const string& lang : MeaningExtractor::config.languages)
+    {
+        if (!termRef[FLD_LANGS].count(lang))
+            continue;
+
+        const json& docLangRef = termRef[FLD_LANGS][lang];
+        const json& docMeaningRefs = docLangRef[FLD_MEANINGS];
+
+        if (pos != "")
+        {
+            if (!docMeaningRefs.count(pos))
+                break;
+
+            const json& meaningRefs = docMeaningRefs[pos];
+
+            for (const json& meaningRef : meaningRefs)
+            {
+                meaningRefIds.push_back(meaningRef[FLD_ID]);
+            }
+        }
+        else
+        {
+            const json& meaningPosRefs = termRef[FLD_LANGS][lang][FLD_MEANINGS];
+            json::const_iterator begin = meaningPosRefs.begin();
+            json::const_iterator end = meaningPosRefs.end();
+
+            for (auto posIt = begin; posIt != end; ++posIt)
+            {
+                string pos = string(posIt.key());
+
+                const json& meaningRefs = docMeaningRefs[pos];
+
+                for (const json& meaningRef : meaningRefs)
+                {
+                    meaningRefIds.push_back(meaningRef[FLD_ID]);
+                }
+            }
+        }
+    }
+
+    return meaningRefIds;
+}
+
 vector<std::pair<ulong, float>> MeaningExtractor::similar(const string& term, uint size, bool reversed)
 {
     return similar(term, size, reversed, ""); 
@@ -1066,6 +1117,7 @@ void MeaningExtractor::preloadVectors(const string& vecFilename="")
                     meaning.term = termRef[FLD_TITLE];
                     meaning.pos = pos;
                     meaning.descr = meaningRef[FLD_MEANING_DESCR];
+                    meaning.lang = lang;
 
                     if (meaningRef.count(FLD_EXAMPLES))
                     {
@@ -1115,10 +1167,10 @@ void MeaningExtractor::preloadVectors(const string& vecFilename="")
 
     idfWeak();
     markEffective();
+    joinTranslations();
 
     MeaningExtractor::vectorsLoaded = true;
 }
-
 
 void MeaningExtractor::idfWeak()
 {
@@ -1189,6 +1241,56 @@ void MeaningExtractor::markEffective()
             idx++;
         }
     }
+}
+
+void MeaningExtractor::joinTranslations()
+{
+    for (auto cacheIt = MeaningExtractor::reprCache.begin(); cacheIt != MeaningExtractor::reprCache.end(); ++cacheIt)
+    {
+        const Meaning& meaning = cacheIt->second;
+        const SparseArray& vec = cacheIt->second.repr;
+        for (auto vecIt = vec.begin(); vecIt != vec.end(); ++vecIt)
+        {
+            if (vecIt->first >= wiktdb->invIndex.size() * ReprOffsetBase::translation &&
+                vecIt->first < wiktdb->invIndex.size() * ReprOffsetBase::pos)
+            {
+                string term = (*wiktdb)[vecIt->first % wiktdb->size()]["title"].get<string>();
+                vector<ulong> meaningRefIds = getMeaningRefIds(term, meaning.pos);
+
+                if (meaningRefIds.size() == 1)
+                {
+                    Meaning& translMeaning = MeaningExtractor::reprCache[meaningRefIds[0]];
+                    translationVectorJoin(vecIt->first, meaning, translMeaning);
+                }
+                else
+                {
+                    for (ulong meaningRefId : meaningRefIds)
+                    {
+                        Meaning& translMeaning = MeaningExtractor::reprCache[meaningRefId];
+                        vector<string> translDescr = StringUtils::split(translMeaning.descr);
+
+                        if (translMeaning.descr == meaning.term ||
+                            translMeaning.descr == meaning.descr ||
+                            (translDescr.size() > 1 && translDescr[1] == meaning.term))
+                        {
+                            translationVectorJoin(vecIt->first, meaning, translMeaning);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void MeaningExtractor::translationVectorJoin(ulong translIdx, const Meaning& meaning, Meaning& translMeaning)
+{
+    for (auto it = meaning.repr.begin(); it != meaning.repr.end(); ++it)
+    {
+        translMeaning.repr[it->first] += it->second;
+    }
+
+    translMeaning.repr[translIdx] = 0;
+    translMeaning.repr[wiktdb->linkIndex(meaning.term, ReprOffsetBase::translation)] = config.linkWeights.link_transl;
 }
 
 SparseArray MeaningExtractor::effectiveRepr(const SparseArray& vec)

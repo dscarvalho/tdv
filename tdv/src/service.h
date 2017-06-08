@@ -5,6 +5,7 @@
 #include <cppcms/applications_pool.h>  
 #include <cppcms/service.h>
 #include <cstdlib>
+#include <algorithm>
 #include "wiktdb.h"
 #include "sparsearray.h"
 #include "vectorize.h"
