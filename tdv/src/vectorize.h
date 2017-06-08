@@ -81,7 +81,8 @@ class MeaningExtractor
     static Config config;
     
     static void setDB(WiktDB *wiktdb);
-    static void preloadVectors(const string& vecFilename);
+    static void loadVectorsFromFile(const string& meaningFilename);
+    static void preloadVectors();
 
     static SparseArray getVector(const string& term);
     static SparseArray getVector(const string& term, const string& pos);
@@ -106,6 +107,7 @@ class MeaningExtractor
     static string stringRepr(const SparseArray& vec, const string separator, bool dense, bool named);
     static string stringRepr(Meaning meaning, const string separator, bool dense, bool named);
     static json jsonRepr(const SparseArray& vec, bool named);
+    static SparseArray fromJsonRepr(const json& jsonVec, bool named);
 };
 
 #endif

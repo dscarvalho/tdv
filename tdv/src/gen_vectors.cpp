@@ -17,51 +17,86 @@ void loadData(const string& configFileName)
     MeaningExtractor::setDB(wiktdb);
     
     std::cout << "Preloading vectors..." << std::endl;
-    MeaningExtractor::preloadVectors(MeaningExtractor::config.vectorFilePath);
+    MeaningExtractor::preloadVectors();
 }
 
-void writeVectors(const string& oFileName)
+void writeMeanings(const string& oFileName)
 {
-    std::ofstream fReprs;
+    std::ofstream fMeanings;
     json meaningList = json::array();
     bool humanReadable = MeaningExtractor::config.humanReadable;
     
-    fReprs.open(oFileName);
+    fMeanings.open(oFileName);
 
     for (auto it = MeaningExtractor::reprCache.begin(); it != MeaningExtractor::reprCache.end(); ++it)
     {
         json meaning = json::object();
 
-        meaning["id"] = it->first;
-        meaning["term"] = it->second.term;
-        meaning["pos"] = it->second.pos;
-        meaning["repr"] = MeaningExtractor::jsonRepr(it->second.repr, humanReadable);
+        meaning[FLD_ID] = it->first;
+        meaning[FLD_TERM] = it->second.term;
+        meaning[FLD_POS] = it->second.pos;
+        meaning[FLD_DESCR] = it->second.descr;
+        meaning[FLD_LANG] = it->second.lang;
+        meaning[FLD_REPR] = MeaningExtractor::jsonRepr(it->second.repr, humanReadable);
 
         meaningList.push_back(meaning); 
     }
 
     if (humanReadable)
-        fReprs <<  std::setw(2) << meaningList << std::endl;
+        fMeanings <<  std::setw(2) << meaningList << std::endl;
     else
-        fReprs << meaningList;
+        fMeanings << meaningList;
 
-    fReprs.flush();
-    fReprs.close();
+    fMeanings.flush();
+    fMeanings.close();
+}
+
+void writeVectors(const string& oFileName)
+{
+    std::ofstream fVectors;
+    json meaningVectors = json::object();
+
+    fVectors.open(oFileName);
+
+    for (auto it = MeaningExtractor::reprCache.begin(); it != MeaningExtractor::reprCache.end(); ++it)
+    {
+        if (!meaningVectors.count(it->second.term))
+        {
+            meaningVectors[it->second.term] = json::array();
+        }
+
+        json meaning = json::object();
+        meaning[FLD_ID] = it->first;
+        meaning[it->second.term][FLD_POS] = it->second.pos;
+        meaning["vec"] = MeaningExtractor::jsonRepr(it->second.repr, false);
+
+        meaningVectors[it->second.term].push_back(meaning);
+    }
+
+    fVectors << meaningVectors;
+
+    fVectors.flush();
+    fVectors.close();
 }
 
 int main(int argc, char **argv)
 {
-    if (argc != 3)
+    if (argc != 4)
     {
-        std::cout << "Usage: " << argv[0] << " <config. filename> <output filename>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <config. filename> <output filename> <mode: (vectors|meanings)>" << std::endl;
     }
     else
     {
         string configFileName(argv[1]);
         string oFileName(argv[2]);
+        string mode(argv[3]);
 
         loadData(configFileName);
-        writeVectors(oFileName);
+
+        if (mode == "vectors")
+            writeVectors(oFileName);
+        else
+            writeMeanings(oFileName);
     }
 
     return 0;

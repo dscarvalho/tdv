@@ -509,7 +509,7 @@ void MeaningExtractor::fillTranslation(SparseArray& vec, const string& pos, cons
     {
         for (auto translTermIt = selTransl->begin(); translTermIt != selTransl->end(); ++translTermIt)
         {
-            const string& translTermLang = translTermIt.key();
+            //const string& translTermLang = translTermIt.key();
             json& translTermLst = translTermIt.value();
 
             for (json& translTermRef : translTermLst)
@@ -999,10 +999,6 @@ float MeaningExtractor::similarity(const string& term1, const string& pos1, cons
         ulong idx_synterm2 = wiktdb->size() * ReprOffsetBase::synonym + wiktdb->index(term2);
         ulong idx_strterm1 = wiktdb->size() * ReprOffsetBase::strong + wiktdb->index(term1);
         ulong idx_strterm2 = wiktdb->size() * ReprOffsetBase::strong + wiktdb->index(term2);
-        ulong idx_wkterm1 = wiktdb->size() * ReprOffsetBase::weak + wiktdb->index(term1);
-        ulong idx_wkterm2 = wiktdb->size() * ReprOffsetBase::weak + wiktdb->index(term2);
-        ulong idx_hypterm1 = wiktdb->size() * ReprOffsetBase::hypernym + wiktdb->index(term1);
-        ulong idx_hypterm2 = wiktdb->size() * ReprOffsetBase::hypernym + wiktdb->index(term2);
 
         if (wiktdb->exists(term1 + " " + term2) || wiktdb->exists(term2 + " " + term1))
         {
@@ -1085,7 +1081,38 @@ float MeaningExtractor::similarity(const string& term1, const string& pos1, cons
     return SparseArray::weightedCosine(vec1, vec2, 1.0, scale);
 }
 
-void MeaningExtractor::preloadVectors(const string& vecFilename="")
+void MeaningExtractor::loadVectorsFromFile(const string& meaningFilename)
+{
+    json meaningList;
+
+    try
+    {
+        std::ifstream ifile(meaningFilename);
+        ifile >> meaningList;
+    }
+    catch (std::ifstream::failure)
+    {
+        std::cerr << "Error opening meaning file: " << meaningFilename << ". Preloading vectors from DB." << std::endl;
+        preloadVectors();
+        return;
+    }
+
+    for (auto it = meaningList.begin(); it != meaningList.end(); ++it)
+    {
+        Meaning meaning;
+        meaning.term = (*it)[FLD_TERM];
+        meaning.pos = (*it)[FLD_POS];
+        meaning.descr = (*it)[FLD_DESCR];
+        meaning.lang = (*it)[FLD_LANG];
+        meaning.repr = fromJsonRepr((*it)[FLD_REPR], config.humanReadable);
+
+        MeaningExtractor::reprCache[(*it)[FLD_ID]] = meaning;
+    }
+
+    MeaningExtractor::vectorsLoaded = true;
+}
+
+void MeaningExtractor::preloadVectors()
 {
     if (MeaningExtractor::vectorsLoaded)
         return;
@@ -1415,3 +1442,18 @@ json MeaningExtractor::jsonRepr(const SparseArray& vec, bool named)
     return jRepr;
 }
 
+SparseArray MeaningExtractor::fromJsonRepr(const json& jsonVec, bool named)
+{
+    SparseArray vec;
+
+    for (auto it = jsonVec.begin(); it != jsonVec.end(); ++it)
+    {
+        ulong idx = std::atoll(it.key().c_str());
+        if (named)
+            vec[idx] = it.value();
+        else
+            vec[idx] = it.value()["value"];
+    }
+
+    return vec;
+}

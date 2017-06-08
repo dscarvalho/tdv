@@ -23,7 +23,7 @@
 #define LINK_SEARCH_DEPTH "link_search_depth"
 
 #define WIKT_DB "wikt_db_path"
-#define VECTOR_FILE "vector_file_path"
+#define MEANING_FILE "meaning_file_path"
 #define HUMAN_READABLE "human_readable"
 
 struct LinkWeights
@@ -47,7 +47,7 @@ class Config
     uint linkSearchDepth;
     LinkWeights linkWeights;
     string wiktDBPath;
-    string vectorFilePath;
+    string meaningFilePath;
     bool humanReadable;
 
     void load(const string& configFilePath);

@@ -21,7 +21,7 @@ void Config::load(const string &filename)
     }
 
     wiktDBPath = jsonConf[WIKT_DB];
-    vectorFilePath = jsonConf[VECTOR_FILE];
+    meaningFilePath = jsonConf[MEANING_FILE];
     humanReadable = jsonConf[HUMAN_READABLE];
 
     linkWeights.link_weak = jsonConf[LINK_WEIGHTS][LINK_WEAK];

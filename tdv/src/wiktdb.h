@@ -12,6 +12,7 @@ using nlohmann::json;
 #define LANG_OFFSET_LIMIT 1000
 #define MEANING_OFFSET_LIMIT 10000
 
+//WiktDB related fields
 #define FLD_LANGS "langs"
 #define FLD_MEANINGS "meanings"
 #define FLD_ATTRS "attrs"
@@ -33,6 +34,13 @@ using nlohmann::json;
 #define FLD_ETYM_STEM "stem"
 #define FLD_POS_ORDER "pos_order"
 #define FLD_REDIRECT "redirect"
+
+//IO related fields
+#define FLD_TERM "term"
+#define FLD_POS "pos"
+#define FLD_DESCR "descr"
+#define FLD_LANG "lang"
+#define FLD_REPR "repr"
 
 enum ReprOffsetBase
 {

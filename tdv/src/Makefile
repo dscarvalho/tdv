@@ -1,9 +1,9 @@
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	CXXFLAGS = -std=c++11 -O3
+	CXXFLAGS = -std=c++11 -O3 -Wall
 endif
 ifeq ($(UNAME_S),Darwin)
-	CXXFLAGS = -std=c++11 -stdlib=libc++ -O3
+	CXXFLAGS = -std=c++11 -stdlib=libc++ -O3 -Wall
 endif
 
 INCLUDE = -I ../include/ -I ../include/cppcms/

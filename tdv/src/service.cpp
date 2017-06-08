@@ -49,7 +49,7 @@ TDVService::TDVService(cppcms::service &srv): cppcms::application(srv)
     MeaningExtractor::setDB(wiktdb);
     
     std::cout << "Preloading vectors..." << std::endl;
-    MeaningExtractor::preloadVectors("data/reprs.ser");
+    MeaningExtractor::loadVectorsFromFile(MeaningExtractor::config.meaningFilePath);;
 
     std::cout << "Ready." << std::endl;
 }
