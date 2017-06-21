@@ -1088,9 +1088,10 @@ void MeaningExtractor::loadVectorsFromFile(const string& meaningFilename)
     try
     {
         std::ifstream ifile(meaningFilename);
+        ifile.exceptions(std::ifstream::eofbit | std::ifstream::failbit | std::ifstream::badbit);
         ifile >> meaningList;
     }
-    catch (std::ifstream::failure)
+    catch (std::system_error& e)
     {
         std::cerr << "Error opening meaning file: " << meaningFilename << ". Preloading vectors from DB." << std::endl;
         preloadVectors();
@@ -1298,7 +1299,7 @@ void MeaningExtractor::joinTranslations()
 
                         if (translMeaning.descr == meaning.term ||
                             translMeaning.descr == meaning.descr ||
-                            (translDescr.size() > 1 && translDescr[1] == meaning.term))
+                            (translDescr.size() > 1 && (translDescr[0].find(meaning.term) != string::npos || translDescr[1].find(meaning.term) != string::npos)))
                         {
                             translationVectorJoin(vecIt->first, meaning, translMeaning);
                         }
