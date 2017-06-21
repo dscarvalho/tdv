@@ -67,7 +67,7 @@ void writeVectors(const string& oFileName)
 
         json meaning = json::object();
         meaning[FLD_ID] = it->first;
-        meaning[it->second.term][FLD_POS] = it->second.pos;
+        meaning[FLD_POS] = it->second.pos;
         meaning["vec"] = MeaningExtractor::jsonRepr(it->second.repr, false);
 
         meaningVectors[it->second.term].push_back(meaning);

@@ -23,6 +23,7 @@ build: lib
 
 	echo '#!/bin/bash' > build/run_service.sh
 	echo $(SERVICE_CMD) >> build/run_service.sh
+	chmod +x build/run_service.sh
 	
 
 download_data:
