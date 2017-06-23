@@ -295,6 +295,9 @@ void TDVService::similarity()
     string pos2 = request().get("pos2");
     float scale = atof(request().get("scale").c_str());
     
+    if (scale < 0.001)
+        scale = 1;
+    
     setHeaders();
 
     response().out() <<  MeaningExtractor::similarity(term1, pos1, term2, pos2, vector<string>(), scale) << std::endl;

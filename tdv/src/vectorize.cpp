@@ -244,7 +244,7 @@ void MeaningExtractor::fillSynonym(SparseArray& vec, const string& pos, const js
             const string& meaningDescr = meaningRef[FLD_MEANING_DESCR];
             if (std::regex_match(meaningDescr, std::regex("^not? .*")))
                 vec[wiktdb->linkIndex(link, ReprOffsetBase::synonym)] = -config.linkWeights.link_syn;
-            else
+            else if (std::regex_match(meaningDescr, std::regex("^(a|an)? " + link)))
                 vec[wiktdb->linkIndex(link, ReprOffsetBase::synonym)] = config.linkWeights.link_syn;
         }
     }
@@ -269,7 +269,7 @@ void MeaningExtractor::fillSynonym(SparseArray& vec, const string& pos, const js
                             const string& attrName = attrRef[0];
                             if (attrName == "sense")
                             {
-                                vector<string> senseWords = StringUtils::split(attrRef[1]);
+                                vector<string> senseWords = StringUtils::split(attrRef[1], ",");
 
                                 for (const string& senseWord : senseWords)
                                 {
@@ -282,9 +282,9 @@ void MeaningExtractor::fillSynonym(SparseArray& vec, const string& pos, const js
                                     }
                                 }
                             }
-                            else if (attrName == "l")
+                            else if (attrName == "l" || attrName == "label")
                             {
-                                const string& synTerm = attrRef[2];
+                                const string& synTerm = attrRef[1];
                                 if (wiktdb->exists(synTerm))
                                     vec[wiktdb->linkIndex(synTerm, ReprOffsetBase::synonym)] = it->second;
                             }
@@ -982,7 +982,8 @@ vector<std::pair<ulong, float>> MeaningExtractor::similarRepr(const SparseArray&
 float MeaningExtractor::similarity(const string& term1, const string& pos1, const string& term2, const string& pos2, const vector<string>& context, float scale)
 {
     SparseArray vec1, vec2;
-    MeaningExtractor::graphFill = true;
+    //MeaningExtractor::graphFill = true;
+    MeaningExtractor::graphFill = false;
     uint linkSearchDepth = MeaningExtractor::linkSearchDepth;
     MeaningExtractor::linkSearchDepth = 1;
 
@@ -1273,10 +1274,15 @@ void MeaningExtractor::markEffective()
 
 void MeaningExtractor::joinTranslations()
 {
+    set<ulong> joinedMeaningRefIds;
     for (auto cacheIt = MeaningExtractor::reprCache.begin(); cacheIt != MeaningExtractor::reprCache.end(); ++cacheIt)
     {
         const Meaning& meaning = cacheIt->second;
         const SparseArray& vec = cacheIt->second.repr;
+        
+        if (joinedMeaningRefIds.count(cacheIt->first) || meaning.lang != config.lang)
+            continue;
+
         for (auto vecIt = vec.begin(); vecIt != vec.end(); ++vecIt)
         {
             if (vecIt->first >= wiktdb->invIndex.size() * ReprOffsetBase::translation &&
@@ -1289,6 +1295,7 @@ void MeaningExtractor::joinTranslations()
                 {
                     Meaning& translMeaning = MeaningExtractor::reprCache[meaningRefIds[0]];
                     translationVectorJoin(vecIt->first, meaning, translMeaning);
+                    joinedMeaningRefIds.insert(meaningRefIds[0]);
                 }
                 else
                 {
@@ -1302,6 +1309,7 @@ void MeaningExtractor::joinTranslations()
                             (translDescr.size() > 1 && (translDescr[0].find(meaning.term) != string::npos || translDescr[1].find(meaning.term) != string::npos)))
                         {
                             translationVectorJoin(vecIt->first, meaning, translMeaning);
+                            joinedMeaningRefIds.insert(meaningRefId);
                         }
                     }
                 }
@@ -1314,7 +1322,8 @@ void MeaningExtractor::translationVectorJoin(ulong translIdx, const Meaning& mea
 {
     for (auto it = meaning.repr.begin(); it != meaning.repr.end(); ++it)
     {
-        translMeaning.repr[it->first] += it->second;
+        if (!translMeaning.repr.count(it->first))
+            translMeaning.repr[it->first] += it->second;
     }
 
     translMeaning.repr[translIdx] = 0;
