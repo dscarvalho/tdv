@@ -408,7 +408,7 @@ class WiktionaryParser(Process):
                     pg_links.append(mo.group("term"))
 
             clean_txt = clean_expr(mngstr, "term")
-            clean_txt_wlabels = clean_expr(mngstr, keeplabels=True)
+            clean_txt_wlabels = clean_expr(mngstr, keeplabels)
 
             attrs, clean_txt = self.get_attributes(clean_txt)
 
