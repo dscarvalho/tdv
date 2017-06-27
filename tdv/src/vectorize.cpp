@@ -987,8 +987,8 @@ float MeaningExtractor::similarity(const string& term1, const string& pos1, cons
     uint linkSearchDepth = MeaningExtractor::linkSearchDepth;
     MeaningExtractor::linkSearchDepth = 1;
 
-    vec1 = Meaning(term1, pos1).getVector();
-    vec2 = Meaning(term2, pos2).getVector();
+    vec1 = (pos1 != "") ? Meaning(term1, pos1).getVector() : Meaning(term1).getVector();
+    vec2 = (pos2 != "") ? Meaning(term2, pos2).getVector() : Meaning(term2).getVector();
     MeaningExtractor::graphFill = false;
     MeaningExtractor::linkSearchDepth = linkSearchDepth;
     float linkSynWeight = MeaningExtractor::config.linkWeights.link_syn;
