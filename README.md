@@ -45,16 +45,16 @@ The TDV web service provides the following methods:
 All service responses are JSON compatible.
 
 #### Examples:
-* http://localhost:34080/tdv/similarity?term1=happy&term2=sad
-* http://localhost:34080/tdv/similarity?term1=cat&pos1=noun&term2=lion&pos2=noun
+* http://localhost:6480/tdv/similarity?term1=happy&term2=sad
+* http://localhost:6480/tdv/similarity?term1=cat&pos1=noun&term2=lion&pos2=noun
 
-* http://localhost:34080/tdv/similar?term=city&pos=noun
+* http://localhost:6480/tdv/similar?term=city&pos=noun
 
-* http://localhost:34080/tdv/repr?term=move&pos=verb&human=true
+* http://localhost:6480/tdv/repr?term=move&pos=verb&human=true
 
-* http://localhost:34080/tdv/disambig?sent=the conference chair will make an announcement&term=chair&pos=noun
+* http://localhost:6480/tdv/disambig?sent=the%20conference%20chair%20will%20make%20an%20announcement&term=chair&pos=noun
 
-* http://localhost:34080/tdv/wiktdef?term=cat
+* http://localhost:6480/tdv/wiktdef?term=cat
 
 
 
