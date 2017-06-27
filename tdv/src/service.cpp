@@ -252,36 +252,14 @@ void TDVService::disambiguation()
     
     SparseArray vec;
     if (pos != "")
-        vec = Meaning(term, pos, context).getVector();
+        vec = Meaning(term, pos).getVector();
     else
-        vec = Meaning(term, context).getVector();
+        vec = Meaning(term).getVector();
 
-    vector<std::pair<ulong, float>> simList = MeaningExtractor::similarRepr(vec, 100, false, "", context);
+    Meaning& disambigMeaning = MeaningExtractor::disambiguate(term, pos, context);
     
     json res = json::array();
-
-    for (auto pair : simList)
-    {
-        const Meaning& meaning = MeaningExtractor::reprCache[pair.first];
-
-        float bonus = 0.0;
-
-        if (context.size() > 0)
-        {
-            for (const string& ctxWord : context)
-            {
-                if (meaning.descr.find(ctxWord) != string::npos && meaning.term == term)
-                    bonus += 0.5;
-            }
-        }
-
-        pair.second += bonus;
-    }
-
-    std::sort(simList.begin(), simList.end(), distComparator);
-
-    const Meaning& meaning = MeaningExtractor::reprCache[simList.back().first];
-    res.push_back(json({{"sim", simList.back().second}, {"term", meaning.term}, {"pos", meaning.pos}, {"descr", meaning.descr}}));
+    res.push_back(json({{"term", disambigMeaning.term}, {"pos", disambigMeaning.pos}, {"descr", disambigMeaning.descr}}));
       
     response().out() << res;
 

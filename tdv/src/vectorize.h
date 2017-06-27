@@ -96,7 +96,7 @@ class MeaningExtractor
     static vector<std::pair<ulong, float>> similar(const string& term, uint size, bool reversed, const string& pos, const vector<string>& context);
     static vector<std::pair<ulong, float>> similarRepr(const SparseArray& vec, uint size, bool reversed);
     static vector<std::pair<ulong, float>> similarRepr(const SparseArray& vec, uint size, bool reversed, const string& pos);
-    static vector<std::pair<ulong, float>> similarRepr(const SparseArray& vec, uint size, bool reversed, const string& pos, const vector<string>& context);
+    static Meaning& disambiguate(const string& term, const string& pos, const vector<string>& context);
     static float similarity(const string& term1, const string& pos1, const string& term2, const string& pos2, const vector<string>& context, float scale);
 
     static void idfWeak();

@@ -931,7 +931,7 @@ vector<std::pair<ulong, float>> MeaningExtractor::similar(const string& term, ui
         vec1 = getVector(term);
     } 
 
-    return similarRepr(vec1, size, reversed, pos, context);
+    return similarRepr(vec1, size, reversed, pos);
 }
 
 vector<std::pair<ulong, float>> MeaningExtractor::similarRepr(const SparseArray& vec, uint size, bool reversed)
@@ -940,11 +940,6 @@ vector<std::pair<ulong, float>> MeaningExtractor::similarRepr(const SparseArray&
 }
 
 vector<std::pair<ulong, float>> MeaningExtractor::similarRepr(const SparseArray& vec, uint size, bool reversed, const string& pos)
-{
-    return similarRepr(vec, size, reversed, pos, vector<string>());
-}
-
-vector<std::pair<ulong, float>> MeaningExtractor::similarRepr(const SparseArray& vec, uint size, bool reversed, const string& pos, const vector<string>& context)
 {
     vector<std::pair<ulong, float>> compTerms(MeaningExtractor::reprCache.size());
 
@@ -977,6 +972,31 @@ vector<std::pair<ulong, float>> MeaningExtractor::similarRepr(const SparseArray&
     }
 
     return results;
+}
+
+Meaning& MeaningExtractor::disambiguate(const string& term, const string& pos, const vector<string>& context)
+{
+    vector<ulong> meaningRefIds = getMeaningRefIds(term, pos);
+    vector<std::pair<ulong, float>> contextDist(meaningRefIds.size());
+    uint i = 0;
+
+    for (ulong mRefId : meaningRefIds)
+    {
+        Meaning& meaning = MeaningExtractor::reprCache[mRefId];
+        contextDist[i] = std::make_pair(mRefId, 0);
+
+        for (const string& ctxTerm : context)
+        {
+            contextDist[i].second += std::fabs(SparseArray::cosine(meaning.repr, Meaning(ctxTerm).getVector()));
+        }
+
+        i++;
+    }
+
+    std::sort(contextDist.begin(), contextDist.end(), distComparator);
+
+    return MeaningExtractor::reprCache[contextDist.back().first];
+
 }
 
 float MeaningExtractor::similarity(const string& term1, const string& pos1, const string& term2, const string& pos2, const vector<string>& context, float scale)
