@@ -3,6 +3,7 @@
 This is an implementation of the Term Definition Vectors (TDV) method for language representation. TDV provides *high dimensional, sparse* vector representations of lexical items (terms) ranging from morphemes to phrases, based on the definitions of their meanings. It contrasts with distributional representation methods, such as [word2vec](https://code.google.com/archive/p/word2vec/) and [GloVe](https://github.com/stanfordnlp/GloVe/), which define term meanings from their usage patterns (context windows). Compared to distributional methods, TDV performs better at *semantic similarity* computation, where the former perform better at *semantic relatedness*.
 In this implementation, each concept vector represents a sense described in [Wiktionary](https://www.wiktionary.org), as well as its available translations. The TDV representations can be used in several natural language processing applications and since each vector dimension represents a specific definition property, they are also *human-readable*. See the [paper](https://www.aclweb.org/anthology/E/E17/E17-1085.pdf) for more information on Term Definition Vectors.
 
+
 ## Interesting Features of WikTDV
 ### Sense polarity
 Computing vector cosine will yield positive values for adjectives agreeing in sense, such as "*skinny*" and "*thin*", and negative values for those with opposing senses, such as "*happy*" and "*sad*".
@@ -74,6 +75,8 @@ The files are minified and compressed with bzip2. A non-minified version of the 
 - [Pre-processed English Wiktionary 2017-04-20 (all languages) (non-minified)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted.json.bz2)
 - [Pre-processed English Wiktionary 2017-04-20 (English, Translingua) (non-minified)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_en-tr.json.bz2)
 
+These files are distributed under the [Creative Commons Attribution-ShareAlike 3.0](https://creativecommons.org/licenses/by-sa/3.0/) license.
+
 
 ## Processing the Wiktionary database from scratch
 You can also process an up-to-date Wiktionary database file (XML) in the following way:
@@ -83,4 +86,16 @@ You can also process an up-to-date Wiktionary database file (XML) in the followi
   - The number of processes and entries per process should be adjusted according to the number of CPUs and available main memory.
 3. To filter the output file for specific languages, run 'python langfilter.py [path of the preprocessed Wiktionary file (JSON)] [languages]'
   - where [languages] is a comma separated list of the desired languages. Ex: "English,German,Chinese".
+  
+  
+ ## License, Citations and Related projects
+ This project is released under the free MIT license. You are free to copy, modify and redistribute the code, under the condition of including the original copyright notice and license in all copies of substantial portions of this software.
+ 
+ If you use this project in your research, please cite the paper:
+ 
+ Danilo S. Carvalho and Minh Le Nguyen. *Building Lexical Vector Representations from Concept Definitions*. [pdf](https://www.aclweb.org/anthology/E/E17/E17-1085.pdf) [bib](https://aclweb.org/anthology/E/E17/E17-1085.bib)
+ 
+ Feel free to send us links to your project or research paper related to WikTDV, that you think will be useful for others.
+ Contact info: {danilo, nguyenml} [at] jaist.ac.jp
+ 
 
