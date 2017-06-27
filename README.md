@@ -93,7 +93,7 @@ You can also process an up-to-date Wiktionary database file (XML) in the followi
  
  If you use this project in your research, please cite the paper:
  
- *Danilo S. Carvalho and Minh Le Nguyen. **Building Lexical Vector Representations from Concept Definitions**. [[pdf]](https://www.aclweb.org/anthology/E/E17/E17-1085.pdf) [[bib]](https://aclweb.org/anthology/E/E17/E17-1085.bib)
+ *Danilo S. Carvalho and Minh Le Nguyen. **Building Lexical Vector Representations from Concept Definitions***. [[pdf]](https://www.aclweb.org/anthology/E/E17/E17-1085.pdf) [[bib]](https://aclweb.org/anthology/E/E17/E17-1085.bib)
  
  Feel free to send us links to your project or research paper related to WikTDV, that you think will be useful for others.
  Contact info: {danilo, nguyenml} [at] jaist.ac.jp
