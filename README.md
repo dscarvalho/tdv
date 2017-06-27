@@ -89,7 +89,7 @@ You can also process an up-to-date Wiktionary database file (XML) in the followi
   
   
 ## License, Citations and Related projects
-WikTDV is released under the free MIT license. You are free to copy, modify and redistribute the code, under the condition of including the original copyright notice and license in all copies of substantial portions of this software. See [LICENCE](https://github.com/dscarvalho/tdv/blob/master/LICENSE) for more information.
+WikTDV is released under the free MIT license. You are free to copy, modify and redistribute the code, under the condition of including the original copyright notice and license in all copies of substantial portions of this software. See [LICENSE](https://github.com/dscarvalho/tdv/blob/master/LICENSE) for more information.
  
 If you use WikTDV in your research, please cite the paper:
  
