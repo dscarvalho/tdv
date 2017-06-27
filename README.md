@@ -52,7 +52,7 @@ All service responses are JSON compatible.
 
 * http://localhost:34080/tdv/repr?term=move&pos=verb&human=true
 
-* http://localhost:34080/tdv/disambig?sent=the conference chair will make an announcement&term=chair&pos=noun
+* [http://localhost:34080/tdv/disambig?sent=the conference chair will make an announcement&term=chair&pos=noun]
 
 * http://localhost:34080/tdv/wiktdef?term=cat
 
