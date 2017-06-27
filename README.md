@@ -58,7 +58,7 @@ All service responses are JSON compatible.
 
 
 
-## Download extracted definition vectors and pre-processed Wiktionary data
+## Download concept vectors and pre-processed Wiktionary data
 Extracted concept vectors can be download from the following links:
 
 - [Concept vectors for English Wiktionary 2017-04-20 (cn,de,en,es,fr,jp,pt,vn)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb.vectors.json.bz2)
