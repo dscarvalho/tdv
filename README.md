@@ -79,8 +79,8 @@ The files are minified and compressed with bzip2. A non-minified version of the 
 You can also process an up-to-date Wiktionary database file (XML) in the following way:
 
 1. Change to the 'wiktparser' directory, from the project root: cd tdv/wiktparser
-2. Run 'python extract.py -idx <path of temp. index> -n <num. parallel processes> -pp <num. of entries per process> <path of Wiktionary XML database dump> <path of the output file (JSON)'
+2. Run 'python extract.py -idx [path of temp. index] -n [num. parallel processes] -pp [num. of entries per process] [path of Wiktionary XML database dump] [path of the output file (JSON)]'
   - The number of processes and entries per process should be adjusted according to the number of CPUs and available main memory.
-3. To filter the output file for specific languages, run 'python langfilter.py <path of the preprocessed Wiktionary file (JSON)> <languages>'
-  - where <languages> is a comma separated list of the desired languages. Ex: "English,German,Chinese".
+3. To filter the output file for specific languages, run 'python langfilter.py [path of the preprocessed Wiktionary file (JSON)] [languages]'
+  - where [languages] is a comma separated list of the desired languages. Ex: "English,German,Chinese".
 
