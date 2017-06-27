@@ -88,14 +88,14 @@ You can also process an up-to-date Wiktionary database file (XML) in the followi
   - where [languages] is a comma separated list of the desired languages. Ex: "English,German,Chinese".
   
   
- ## License, Citations and Related projects
- This project is released under the free MIT license. You are free to copy, modify and redistribute the code, under the condition of including the original copyright notice and license in all copies of substantial portions of this software.
+## License, Citations and Related projects
+WikTDV is released under the free MIT license. You are free to copy, modify and redistribute the code, under the condition of including the original copyright notice and license in all copies of substantial portions of this software.
  
- If you use this project in your research, please cite the paper:
+If you use WikTDV in your research, please cite the paper:
  
- *Danilo S. Carvalho and Minh Le Nguyen. **Building Lexical Vector Representations from Concept Definitions***. [[pdf]](https://www.aclweb.org/anthology/E/E17/E17-1085.pdf) [[bib]](https://aclweb.org/anthology/E/E17/E17-1085.bib)
+*Danilo S. Carvalho and Minh Le Nguyen. **Building Lexical Vector Representations from Concept Definitions***. [[pdf]](https://www.aclweb.org/anthology/E/E17/E17-1085.pdf) [[bib]](https://aclweb.org/anthology/E/E17/E17-1085.bib)
  
- Feel free to send us links to your project or research paper related to WikTDV, that you think will be useful for others.
- Contact info: {danilo, nguyenml} [at] jaist.ac.jp
+Feel free to send us links to your project or research paper related to WikTDV, that you think will be useful for others.
+Contact info: {danilo, nguyenml} [at] jaist.ac.jp
  
 
