@@ -53,8 +53,8 @@ All service responses are JSON compatible.
 
 * http://localhost:6480/tdv/repr?term=move&pos=verb&human=true
 
-* http://150.65.242.115:34080/tdv/disambig?sent=There%20is%20no%20ship%20docked%20here&term=ship
-* http://150.65.242.115:34080/tdv/disambig?sent=They%20will%20ship%20those%20books%20next%20week&term=ship
+* http://localhost:6480/tdv/disambig?sent=There%20is%20no%20ship%20docked%20here&term=ship
+* http://localhost:6480/tdv/disambig?sent=They%20will%20ship%20those%20books%20next%20week&term=ship
 
 * http://localhost:6480/tdv/wiktdef?term=cat
 
