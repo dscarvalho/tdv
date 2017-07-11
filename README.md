@@ -76,6 +76,8 @@ The files are minified and compressed with bzip2. A non-minified version of the 
 - [Pre-processed English Wiktionary 2017-04-20 (all languages) (non-minified)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted.json.bz2)
 - [Pre-processed English Wiktionary 2017-04-20 (English, Translingua) (non-minified)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_en-tr.json.bz2)
 
+The schema for the pre-processed Wiktionary data can be found on [wiktparser/wikt_entry_schema.json](https://github.com/dscarvalho/tdv/blob/master/wiktparser/wikt_entry_schema.json). Strings not processed by the parser are left in the original Wiktionary markup format.
+
 These files are distributed under the [Creative Commons Attribution-ShareAlike 3.0](https://creativecommons.org/licenses/by-sa/3.0/) license.
 
 
