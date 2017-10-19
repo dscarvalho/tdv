@@ -59,7 +59,7 @@ All service responses are JSON compatible.
 * http://localhost:6480/tdv/wiktdef?term=cat
 
 
-###Web Demonstration
+### Web Demonstration
 A Web demonstration interface can be accessed at [https://s242-097.jaist.ac.jp/tdvdemo/](https://s242-097.jaist.ac.jp/tdvdemo/).
 It uses the web service methods as its backend.
 
