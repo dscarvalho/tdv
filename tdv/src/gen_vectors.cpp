@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include "types.h"
 #include "wiktdb.h"
 #include "sparsearray.h"
