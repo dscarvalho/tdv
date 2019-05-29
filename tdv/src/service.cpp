@@ -125,6 +125,7 @@ void TDVService::setHeaders()
 {
     response().set_header("Access-Control-Allow-Origin", "*");
     response().set_header("Access-Control-Allow-Credentials", "true");
+    response().set_header("Content-type", "application/json; charset=utf-8");
 }
 
 void TDVService::similar()
