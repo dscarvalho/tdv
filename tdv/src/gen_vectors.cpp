@@ -79,6 +79,51 @@ void writeVectors(const string& oFileName)
     fVectors.close();
 }
 
+void writeCosines(const string& oFileName)
+{
+    std::ofstream fCosines;
+    std::ofstream fConcepts;
+    json concepts = json::array();
+
+    fCosines.open(oFileName + ".cosines.tsv");
+    fConcepts.open(oFileName + ".concepts.json");
+
+    ulong num_concepts = MeaningExtractor::reprCache.size();
+    ulong count_done = 0;
+
+    for (auto it1 = MeaningExtractor::reprCache.begin(); it1 != MeaningExtractor::reprCache.end(); ++it1)
+    {
+        json meaning = json::object();
+        meaning[FLD_ID] = it->first;
+        meaning[FLD_TERM] = it->second.term;
+        meaning[FLD_POS] = it->second.pos;
+        concepts.push_back(meaning);
+
+        for (auto it2 = MeaningExtractor::reprCache.begin(); it2 != MeaningExtractor::reprCache.end(); ++it2)
+        {
+            float sim = 0;
+            if (it1->first != it2->first)
+                sim = MeaningExtractor::similarity(it1->second.term, it1->second.pos, it2->second.term, it2->second.pos, vector<string>(), 1);
+            else
+                sim = 1;
+
+            if (it2 != MeaningExtractor::reprCache.begin())
+                fCosines << "\t";
+
+            fCosines << sim;
+        }
+
+        fCosines << std::endl;
+    }
+
+    fConcepts << concepts << std::endl;
+
+    fConcepts.flush();
+    fCosines.flush();
+    fConcepts.close();
+    fCosines.close();
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 4)
