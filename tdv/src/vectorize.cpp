@@ -1014,6 +1014,9 @@ float MeaningExtractor::similarity(const string& term1, const string& pos1, cons
     float linkSynWeight = MeaningExtractor::config.linkWeights.link_syn;
     const float synWeightMult = SIM_SYNWEIGHT_MULTIPLIER;
 
+    if (SparseArray::keyIntersectionSize(vec1, vec2) == 0)
+        return 0.0;
+
     if (wiktdb->exists(term1) && wiktdb->exists(term2))
     {
         ulong idx_synterm1 = wiktdb->size() * ReprOffsetBase::synonym + wiktdb->index(term1);

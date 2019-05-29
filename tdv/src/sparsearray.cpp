@@ -17,11 +17,16 @@ float SparseArray::weightedCosine(const SparseArray& a, const SparseArray& b, fl
     float norm = a.norm() * b.norm();
     float dot = 0;
 
-    for (auto it = a.begin(); it != a.end(); ++it)
+    size_t aSize = a.size();
+    size_t bSize = b.size();
+    auto big = (aSize > bSize) ? a : b;
+    auto small = (big == a) ? b : a;
+
+    for (auto it = small.begin(); it != small.end(); ++it)
     {
-        if (b.count(it->first))
+        if (big.count(it->first))
         {
-            float prod = it->second * b.at(it->first);
+            float prod = it->second * big.at(it->first);
             if (prod >= 0)
                 prod *= positiveWeight;
             else
@@ -51,6 +56,25 @@ float SparseArray::norm() const
     }
 
     return sqrt(sqrSum);
+}
+
+size_t SparseArray::keyIntersectionSize(const SparseArray& a, const SparseArray& b)
+{
+    size_t size = 0;
+    size_t aSize = a.size();
+    size_t bSize = b.size();
+    auto big = (aSize > bSize) ? a : b;
+    auto small = (big == a) ? b : a;
+
+    for (auto it = small.begin(); it != small.end(); ++it)
+    {
+        if (big.count(it->first))
+        {
+            size++;
+        }
+    }
+
+    return size;
 }
 
 void SparseArray::toCArray(float *v, ulong size) const
