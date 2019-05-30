@@ -15,7 +15,7 @@ class SparseArray : public std::map<ulong, float>
     float norm() const;
 
     // Size of key intersection.
-    static size_t SparseArray::keyIntersectionSize(const SparseArray& a, const SparseArray& b);
+    static size_t keyIntersectionSize(const SparseArray& a, const SparseArray& b);
     
     //Conversion to plain C array.
     void toCArray(float *v, ulong size) const;

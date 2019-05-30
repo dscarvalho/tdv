@@ -87,12 +87,12 @@ void writeCosines(const string& oFileName)
     json concepts = json::array();
 
     fCosines.open(oFileName + ".cosines.bin", std::ios::binary);
-    fConcepts.open(oFileName + ".concepts.json", std::ios::binary);
+    fConcepts.open(oFileName + ".concepts.json");
 
     ulong numConcepts = MeaningExtractor::reprCache.size();
     ulong countDone = 0;
 
-	fCosines << numConcepts; 
+	fCosines.write(reinterpret_cast<const char *>(&numConcepts), sizeof(ulong));
 
     for (auto it1 = MeaningExtractor::reprCache.begin(); it1 != MeaningExtractor::reprCache.end(); ++it1)
     {
@@ -113,7 +113,7 @@ void writeCosines(const string& oFileName)
             //if (it2 != MeaningExtractor::reprCache.begin())
             //    fCosines << "\t";
 
-            fCosines << sim;
+            fCosines.write(reinterpret_cast<const char *>(&sim), sizeof(float));
         }
 
         //fCosines << std::endl;
