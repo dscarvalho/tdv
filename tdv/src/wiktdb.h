@@ -1,6 +1,7 @@
 #ifndef WIKTDB_H
 #define WIKTDB_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <unordered_map>

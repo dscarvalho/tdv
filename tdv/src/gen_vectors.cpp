@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include "types.h"
 #include "wiktdb.h"
 #include "sparsearray.h"
@@ -20,7 +21,7 @@ void loadData(const string& configFileName)
     MeaningExtractor::preloadVectors();
 }
 
-void writeMeanings(const string& oFileName)
+void writeConcepts(const string& oFileName)
 {
     std::ofstream fMeanings;
     json meaningList = json::array();
@@ -79,11 +80,63 @@ void writeVectors(const string& oFileName)
     fVectors.close();
 }
 
+void writeCosines(const string& oFileName)
+{
+    std::ofstream fCosines;
+    std::ofstream fConcepts;
+    json concepts = json::array();
+
+    fCosines.open(oFileName + ".cosines.bin", std::ios::binary);
+    fConcepts.open(oFileName + ".concepts.json");
+
+    ulong numConcepts = MeaningExtractor::reprCache.size();
+    ulong countDone = 0;
+
+	fCosines.write(reinterpret_cast<const char *>(&numConcepts), sizeof(ulong));
+
+    for (auto it1 = MeaningExtractor::reprCache.begin(); it1 != MeaningExtractor::reprCache.end(); ++it1)
+    {
+        json meaning = json::object();
+        meaning[FLD_ID] = it1->first;
+        meaning[FLD_TERM] = it1->second.term;
+        meaning[FLD_POS] = it1->second.pos;
+        concepts.push_back(meaning);
+
+        for (auto it2 = MeaningExtractor::reprCache.begin(); it2 != MeaningExtractor::reprCache.end(); ++it2)
+        {
+            float sim = 0;
+            if (it1->first != it2->first)
+                sim = MeaningExtractor::similarity(it1->second.term, it1->second.pos, it2->second.term, it2->second.pos, vector<string>(), 1);
+            else
+                sim = 1;
+
+            //if (it2 != MeaningExtractor::reprCache.begin())
+            //    fCosines << "\t";
+
+            fCosines.write(reinterpret_cast<const char *>(&sim), sizeof(float));
+        }
+
+        //fCosines << std::endl;
+
+        countDone++;
+
+        //if (countDone % 10 == 0)
+        std::cout << std::setw(4) << (float(countDone) * 100) / numConcepts << "% completed\r";
+    }
+
+    fConcepts << concepts << std::endl;
+
+    fConcepts.flush();
+    fCosines.flush();
+    fConcepts.close();
+    fCosines.close();
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 4)
     {
-        std::cout << "Usage: " << argv[0] << " <config. filename> <output filename> <mode: (vectors|meanings)>" << std::endl;
+        std::cout << "Usage: " << argv[0] << " <config. filename> <output filename> <mode: (vectors|concepts|cosines)>" << std::endl;
     }
     else
     {
@@ -95,8 +148,10 @@ int main(int argc, char **argv)
 
         if (mode == "vectors")
             writeVectors(oFileName);
+        else if (mode == "cosines")
+            writeCosines(oFileName);
         else
-            writeMeanings(oFileName);
+            writeConcepts(oFileName);
     }
 
     return 0;

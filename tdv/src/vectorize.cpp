@@ -1007,96 +1007,105 @@ float MeaningExtractor::similarity(const string& term1, const string& pos1, cons
     uint linkSearchDepth = MeaningExtractor::linkSearchDepth;
     MeaningExtractor::linkSearchDepth = 1;
 
-    vec1 = (pos1 != "") ? Meaning(term1, pos1).getVector() : Meaning(term1).getVector();
-    vec2 = (pos2 != "") ? Meaning(term2, pos2).getVector() : Meaning(term2).getVector();
+    Meaning concept1 = (pos1 != "") ? Meaning(term1, pos1) : Meaning(term1);
+    Meaning concept2 = (pos2 != "") ? Meaning(term2, pos2) : Meaning(term2);
     MeaningExtractor::graphFill = false;
     MeaningExtractor::linkSearchDepth = linkSearchDepth;
+
+    return MeaningExtractor::similarity(concept1, concept2, scale);
+}
+
+float MeaningExtractor::similarity(const Meaning& concept1, const Meaning& concept2, float scale)
+{
+    SparseArray vec1, vec2;
+
+    vec1 = concept1.repr;
+    vec2 = concept2.repr;
+    const string& term1 = concept1.term;
+    const string& term2 = concept2.term; 
     float linkSynWeight = MeaningExtractor::config.linkWeights.link_syn;
     const float synWeightMult = SIM_SYNWEIGHT_MULTIPLIER;
 
-    if (wiktdb->exists(term1) && wiktdb->exists(term2))
-    {
-        ulong idx_synterm1 = wiktdb->size() * ReprOffsetBase::synonym + wiktdb->index(term1);
-        ulong idx_synterm2 = wiktdb->size() * ReprOffsetBase::synonym + wiktdb->index(term2);
-        ulong idx_strterm1 = wiktdb->size() * ReprOffsetBase::strong + wiktdb->index(term1);
-        ulong idx_strterm2 = wiktdb->size() * ReprOffsetBase::strong + wiktdb->index(term2);
-
-        if (wiktdb->exists(term1 + " " + term2) || wiktdb->exists(term2 + " " + term1))
-        {
-            return SIM_EXPR_FIXED_GUESS;
-        }
-
-        if (vec1.count(idx_strterm2))
-        {
-            vec1[idx_strterm2] += linkSynWeight * synWeightMult;
-            vec2[idx_strterm2] = linkSynWeight * synWeightMult;
-        }
-
-        if (vec2.count(idx_strterm1))
-        {
-            vec2[idx_strterm1] += linkSynWeight * synWeightMult;
-            vec1[idx_strterm1] = linkSynWeight * synWeightMult;
-        }
-
-        if (vec1.count(idx_synterm2) || vec2.count(idx_synterm1))
-        {
-            float syn_scaling = linkSynWeight;
-
-            if (vec1.count(idx_synterm2) && vec2.count(idx_synterm1))
-                syn_scaling *= 2;
-
-            if (std::fabs(vec1.get(idx_synterm2)) > 0)
-            {
-                vec1[idx_synterm2] *= syn_scaling;
-                vec1[idx_synterm1] = std::fabs(vec1[idx_synterm2]);
-
-                if (std::fabs(vec1[idx_synterm2]) > std::fabs(vec2[idx_synterm2]))
-                    vec2[idx_synterm2] = std::fabs(vec1[idx_synterm2]);
-                else
-                    vec1[idx_synterm2] =  (vec1[idx_synterm2] / std::fabs(vec1[idx_synterm2])) * vec2[idx_synterm2];
-
-            }
-            else if (std::fabs(vec2.get(idx_synterm1)) > 0)
-            {
-                vec2[idx_synterm1] *= syn_scaling;
-                vec2[idx_synterm2] = std::fabs(vec2[idx_synterm1]);
-
-                if (std::fabs(vec2[idx_synterm1]) > std::fabs(vec1[idx_synterm1]))
-                    vec1[idx_synterm1] = std::fabs(vec2[idx_synterm1]);
-                else
-                    vec2[idx_synterm1] = (vec2[idx_synterm1] / std::fabs(vec2[idx_synterm1])) * vec1[idx_synterm1];
-            }
-
-            for (auto it = vec1.begin(); it != vec1.end(); ++it)
-            {
-                if (it->first < wiktdb->size() * ReprOffsetBase::synonym || it->first >= wiktdb->size() * (ReprOffsetBase::synonym + 1))
-                {
-                    if (it->second < linkSynWeight)
-                        it->second = 0;
-                }
-                else if (std::fabs(it->second) < std::fabs(vec1[idx_synterm2]))
-                {
-                    it->second = 0;
-                }
-            }
-
-            for (auto it = vec2.begin(); it != vec2.end(); ++it)
-            {
-                if (it->first < wiktdb->size() * ReprOffsetBase::synonym || it->first >= wiktdb->size() * (ReprOffsetBase::synonym + 1))
-                {
-                    if (it->second < linkSynWeight)
-                        it->second = 0;
-                }
-                else if (std::fabs(it->second) < std::fabs(vec2[idx_synterm1]))
-                {
-                    it->second = 0;
-                }
-            }
-        }
-    }
-    else
-    {
+    if (SparseArray::keyIntersectionSize(vec1, vec2) == 0)
         return 0.0;
+
+    
+    ulong idx_synterm1 = wiktdb->size() * ReprOffsetBase::synonym + wiktdb->index(term1);
+    ulong idx_synterm2 = wiktdb->size() * ReprOffsetBase::synonym + wiktdb->index(term2);
+    ulong idx_strterm1 = wiktdb->size() * ReprOffsetBase::strong + wiktdb->index(term1);
+    ulong idx_strterm2 = wiktdb->size() * ReprOffsetBase::strong + wiktdb->index(term2);
+
+    if (wiktdb->exists(term1 + " " + term2) || wiktdb->exists(term2 + " " + term1))
+    {
+        return SIM_EXPR_FIXED_GUESS;
+    }
+
+    if (vec1.count(idx_strterm2))
+    {
+        vec1[idx_strterm2] += linkSynWeight * synWeightMult;
+        vec2[idx_strterm2] = linkSynWeight * synWeightMult;
+    }
+
+    if (vec2.count(idx_strterm1))
+    {
+        vec2[idx_strterm1] += linkSynWeight * synWeightMult;
+        vec1[idx_strterm1] = linkSynWeight * synWeightMult;
+    }
+
+    if (vec1.count(idx_synterm2) || vec2.count(idx_synterm1))
+    {
+        float syn_scaling = linkSynWeight;
+
+        if (vec1.count(idx_synterm2) && vec2.count(idx_synterm1))
+            syn_scaling *= 2;
+
+        if (std::fabs(vec1.get(idx_synterm2)) > 0)
+        {
+            vec1[idx_synterm2] *= syn_scaling;
+            vec1[idx_synterm1] = std::fabs(vec1[idx_synterm2]);
+
+            if (std::fabs(vec1[idx_synterm2]) > std::fabs(vec2[idx_synterm2]))
+                vec2[idx_synterm2] = std::fabs(vec1[idx_synterm2]);
+            else
+                vec1[idx_synterm2] =  (vec1[idx_synterm2] / std::fabs(vec1[idx_synterm2])) * vec2[idx_synterm2];
+
+        }
+        else if (std::fabs(vec2.get(idx_synterm1)) > 0)
+        {
+            vec2[idx_synterm1] *= syn_scaling;
+            vec2[idx_synterm2] = std::fabs(vec2[idx_synterm1]);
+
+            if (std::fabs(vec2[idx_synterm1]) > std::fabs(vec1[idx_synterm1]))
+                vec1[idx_synterm1] = std::fabs(vec2[idx_synterm1]);
+            else
+                vec2[idx_synterm1] = (vec2[idx_synterm1] / std::fabs(vec2[idx_synterm1])) * vec1[idx_synterm1];
+        }
+
+        for (auto it = vec1.begin(); it != vec1.end(); ++it)
+        {
+            if (it->first < wiktdb->size() * ReprOffsetBase::synonym || it->first >= wiktdb->size() * (ReprOffsetBase::synonym + 1))
+            {
+                if (it->second < linkSynWeight)
+                    it->second = 0;
+            }
+            else if (std::fabs(it->second) < std::fabs(vec1[idx_synterm2]))
+            {
+                it->second = 0;
+            }
+        }
+
+        for (auto it = vec2.begin(); it != vec2.end(); ++it)
+        {
+            if (it->first < wiktdb->size() * ReprOffsetBase::synonym || it->first >= wiktdb->size() * (ReprOffsetBase::synonym + 1))
+            {
+                if (it->second < linkSynWeight)
+                    it->second = 0;
+            }
+            else if (std::fabs(it->second) < std::fabs(vec2[idx_synterm1]))
+            {
+                it->second = 0;
+            }
+        }
     }
 
     return SparseArray::weightedCosine(vec1, vec2, 1.0, scale);

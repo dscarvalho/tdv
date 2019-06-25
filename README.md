@@ -59,27 +59,33 @@ All service responses are JSON compatible.
 * http://localhost:6480/tdv/wiktdef?term=cat
 
 
-### Web Demonstration
-A Web demonstration interface can be accessed at [https://s242-097.jaist.ac.jp/tdvdemo/](https://s242-097.jaist.ac.jp/tdvdemo/).
-It uses the web service methods as its backend.
+<!-- ### Web Demonstration
+A Web demonstration interface can be accessed at [https://lasics.dcc.ufrj.br/tdvdemo/](https://lasics.dcc.ufrj.br/tdvdemo/).
+It uses the web service methods as its backend.-->
 
+### Online Demo Service
+An online demonstration service can be accessed at https://lasics.dcc.ufrj.br/tdv/
+
+#### Example:
+* https://lasics.dcc.ufrj.br/tdv/similarity?term1=cat&pos1=noun&term2=lion&pos2=noun
 
 
 ## Download concept vectors and pre-processed Wiktionary data
 Extracted concept vectors can be download from the following links:
 
-- [Concept vectors for English Wiktionary 2017-04-20 (cn,de,en,es,fr,jp,pt,vn)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb.vectors.json.bz2)
-- [Concept vectors for English Wiktionary 2017-04-20 (cn,de,en,es,fr,jp,pt,vn) (human-readable)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb.meanings.json.bz2)
-- [Concept vectors for English Wiktionary 2017-04-20 (en, Translingua)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb.vectors_en-tr.json.bz2)
-- [Concept vectors for English Wiktionary 2017-04-20 (en, Translingua) (human-readable)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb.meanings_en-tr.json.bz2)
+- [Concept vectors for English Wiktionary 2017-04-20 (cn,de,en,es,fr,jp,pt,vn)](http://lasics.dcc.ufrj.br/files/tdv/enwiktdb.vectors.json.7z)
+- [Concept vectors for English Wiktionary 2017-04-20 (cn,de,en,es,fr,jp,pt,vn) (human-readable)](http://lasics.dcc.ufrj.br/files/tdv/enwiktdb.meanings.json.7z)
+- [Concept vectors for English Wiktionary 2017-04-20 (en, Translingua)](http://lasics.dcc.ufrj.br/files/tdv/enwiktdb.vectors.en-tr.json.7z)
+- [Concept vectors for English Wiktionary 2017-04-20 (en, Translingua) (human-readable)](http://lasics.dcc.ufrj.br/files/tdv/enwiktdb.meanings.en-tr.json.7z)
 
 Wiktionary pre-processed data can be download from the following links:
-- [Pre-processed English Wiktionary 2017-04-20 (all languages)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_min.json.bz2)
-- [Pre-processed English Wiktionary 2017-04-20 (English, Translingua)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_en-tr_min.json.bz2)
+- [Pre-processed English Wiktionary 2017-04-20 (all languages)](http://lasics.dcc.ufrj.br/files/tdv/enwiktdb_sorted_min.json.7z)
+- [Pre-processed English Wiktionary 2017-04-20 (English, Translingua)](http://lasics.dcc.ufrj.br/files/tdv/enwiktdb_sorted_en-tr_min.json.7z)
 
-The files are minified and compressed with bzip2. A non-minified version of the pre-processed Wiktionary database is also available:
+ The files are minified and compressed with bzip2. 
+ <!--A non-minified version of the pre-processed Wiktionary database is also available:
 - [Pre-processed English Wiktionary 2017-04-20 (all languages) (non-minified)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted.json.bz2)
-- [Pre-processed English Wiktionary 2017-04-20 (English, Translingua) (non-minified)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_en-tr.json.bz2)
+- [Pre-processed English Wiktionary 2017-04-20 (English, Translingua) (non-minified)](http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_en-tr.json.bz2) -->
 
 The schema for the pre-processed Wiktionary data can be found on [wiktparser/wikt_entry_schema.json](https://github.com/dscarvalho/tdv/blob/master/wiktparser/wikt_entry_schema.json). Strings not processed by the parser are left in the original Wiktionary markup format.
 

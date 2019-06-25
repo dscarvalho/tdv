@@ -1,6 +1,6 @@
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	SERVICE_CMD = 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:./lib ./bin/service -c ./cfg/service.conf'
+	SERVICE_CMD = 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:./lib ./bin/service -c ./cfg/service.conf';
 endif
 ifeq ($(UNAME_S),Darwin)
 	SERVICE_CMD = 'DYLD_LIBRARY_PATH=$$DYLD_LIBRARY_PATH:./lib ./bin/service -c ./cfg/service.conf'
@@ -28,6 +28,6 @@ build: lib
 
 download_data:
 	cd build/data
-	curl -o build/data/enwiktdb_sorted_min.json.bz2 "http://www.jaist.ac.jp/~s1520009/files/tdv/enwiktdb_sorted_min.json.bz2"
-	bunzip2 build/data/enwiktdb_sorted_min.json.bz2
+	curl -o build/data/enwiktdb_sorted_min.json.bz2 "http://lasics.dcc.ufrj.br/files/tdv/enwiktdb_sorted_min.json.7z"
+	7z x build/data/enwiktdb_sorted_min.json.bz2 -oc:build/data/
 

@@ -1,12 +1,15 @@
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
-	CXXFLAGS = -std=c++11 -O3 -Wall
-endif
-ifeq ($(UNAME_S),Darwin)
-	CXXFLAGS = -std=c++11 -stdlib=libc++ -O3 -Wall
-endif
+#UNAME_S := $(shell uname -s)
+#ifeq ($(UNAME_S),Linux)
+#	CXXFLAGS = -std=c++11 -stdlib=libc++ -O3 -Wall
+#endif
+#ifeq ($(UNAME_S),Darwin)
+#	CXXFLAGS = -std=c++11 -stdlib=libc++ -O3 -Wall
+#endif
+
+CXXFLAGS = -std=c++11 -stdlib=libc++ -O3 -Wall
 
 INCLUDE = -I ../include/ -I ../include/cppcms/
+CXX = clang++
 
 all: service gen_vectors
 
@@ -14,10 +17,10 @@ clean:
 	rm -f *.o service gen_examples
 
 gen_vectors: stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_vectors.o
-	$(CXX) -L. -L"$(CURDIR)/../lib"  stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_vectors.o -o gen_vectors
+	$(CXX) -L. -L"$(CURDIR)/../lib"  stringutils.o config.o wiktdb.o sparsearray.o vectorize.o gen_vectors.o -o gen_vectors -lc++
 
 service: stringutils.o config.o wiktdb.o sparsearray.o vectorize.o service.o
-	$(CXX) -L. -L"$(CURDIR)/../lib" -Wl,-rpath,"$(CURDIR)/../lib" -lcppcms stringutils.o config.o wiktdb.o sparsearray.o vectorize.o service.o -o service
+	$(CXX) -L. -L"$(CURDIR)/../lib" -Wl,-rpath,"$(CURDIR)/../lib" stringutils.o config.o wiktdb.o sparsearray.o vectorize.o service.o -o service -lc++ -lcppcms -lbooster
 
 gen_vectors.o: gen_vectors.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -c gen_vectors.cpp -o gen_vectors.o
