@@ -1410,7 +1410,7 @@ void MeaningExtractor::joinTranslations()
 
         for (auto vecIt = vec.begin(); vecIt != vec.end(); ++vecIt)
         {
-            if (vecIt->first >= wiktdb->invIndex.size() * ReprOffsetBase::translation &&
+            if (vecIt->first >= wiktdb->invIndex.size() * ReprOffsetBase::translation & &
                 vecIt->first < wiktdb->invIndex.size() * ReprOffsetBase::pos)
             {
                 string term = (*wiktdb)[vecIt->first % wiktdb->size()]["title"].get<string>();

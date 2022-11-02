@@ -40,7 +40,7 @@ void writeConcepts(const string& oFileName)
         meaning[FLD_LANG] = it->second.lang;
         meaning[FLD_REPR] = MeaningExtractor::jsonRepr(it->second.repr, humanReadable);
 
-        meaningList.push_back(meaning); 
+        meaningList.push_back(meaning);
     }
 
     if (humanReadable)

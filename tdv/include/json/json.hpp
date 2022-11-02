@@ -1002,10 +1002,10 @@ struct is_iterator_traits<iterator_traits<T>>
 
   public:
     static constexpr auto value =
-        is_detected<value_type_t, traits>::value &&
-        is_detected<difference_type_t, traits>::value &&
-        is_detected<pointer_t, traits>::value &&
-        is_detected<iterator_category_t, traits>::value &&
+        is_detected<value_type_t, traits>::value & &
+        is_detected<difference_type_t, traits>::value & &
+        is_detected<pointer_t, traits>::value & &
+        is_detected<iterator_category_t, traits>::value & &
         is_detected<reference_t, traits>::value;
 };
 
@@ -3456,20 +3456,20 @@ struct is_sax
 
   public:
     static constexpr bool value =
-        is_detected_exact<bool, null_function_t, SAX>::value &&
-        is_detected_exact<bool, boolean_function_t, SAX>::value &&
+        is_detected_exact<bool, null_function_t, SAX>::value & &
+        is_detected_exact<bool, boolean_function_t, SAX>::value & &
         is_detected_exact<bool, number_integer_function_t, SAX,
-        number_integer_t>::value &&
+        number_integer_t>::value & &
         is_detected_exact<bool, number_unsigned_function_t, SAX,
-        number_unsigned_t>::value &&
+        number_unsigned_t>::value & &
         is_detected_exact<bool, number_float_function_t, SAX, number_float_t,
-        string_t>::value &&
-        is_detected_exact<bool, string_function_t, SAX, string_t>::value &&
-        is_detected_exact<bool, start_object_function_t, SAX>::value &&
-        is_detected_exact<bool, key_function_t, SAX, string_t>::value &&
-        is_detected_exact<bool, end_object_function_t, SAX>::value &&
-        is_detected_exact<bool, start_array_function_t, SAX>::value &&
-        is_detected_exact<bool, end_array_function_t, SAX>::value &&
+        string_t>::value & &
+        is_detected_exact<bool, string_function_t, SAX, string_t>::value & &
+        is_detected_exact<bool, start_object_function_t, SAX>::value & &
+        is_detected_exact<bool, key_function_t, SAX, string_t>::value & &
+        is_detected_exact<bool, end_object_function_t, SAX>::value & &
+        is_detected_exact<bool, start_array_function_t, SAX>::value & &
+        is_detected_exact<bool, end_array_function_t, SAX>::value & &
         is_detected_exact<bool, parse_error_function_t, SAX, exception_t>::value;
 };
 
@@ -20357,7 +20357,7 @@ class basic_json
             // wrapper to get a value for an operation
             const auto get_value = [&val](const std::string & op,
                                           const std::string & member,
-                                          bool string_type) -> basic_json &
+                                          bool string_type) -> basic_json  &
             {
                 // find value
                 auto it = val.m_value.object->find(member);
