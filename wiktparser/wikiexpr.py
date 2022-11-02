@@ -44,7 +44,7 @@ RGX = {
 
 WIKI_REJECT = r":"
 
-for k in RGX.keys():
+for k in RGX:
     RGX[k] = re.compile(RGX[k])
 
 

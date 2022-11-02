@@ -6,25 +6,25 @@ import json
 import argparse
 
 def main(args):
-    print "Loading DB..."
+    print("Loading DB...")
     with open(args.ifilepath, "r") as wiktdb_file:
         db = json.load(wiktdb_file)
     langs = args.langs.split(",")
 
     selected = []
-    print "Filtering..."
+    print("Filtering...")
     for doc in db:
         exist_langs = []
         for lang in langs:
-            if (lang in doc["langs"].keys()):
+            if (lang in doc["langs"]):
                 exist_langs.append(lang)
             
-        if (exist_langs or "redirect" in doc.keys()):
+        if (exist_langs or "redirect" in doc):
             seldoc = dict()
             seldoc["wikid"] = doc["wikid"]
             seldoc["title"] = doc["title"]
             
-            if ("redirect" in doc.keys()):
+            if ("redirect" in doc):
                 seldoc["redirect"] = doc["redirect"]
                 continue
 
@@ -34,7 +34,7 @@ def main(args):
 
             selected.append(seldoc)
 
-    print "Writing..."
+    print("Writing...")
     with open(args.ifilepath.replace(".json", "") + "_" + "-".join([lang.lower()[0:2] for lang in langs]) + ".json", "w") as filtered_file:
         json.dump(selected, filtered_file, indent=2)
 

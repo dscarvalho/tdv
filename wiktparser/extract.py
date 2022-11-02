@@ -7,7 +7,7 @@ import os
 import re
 import math
 import json
-import cPickle
+import pickle
 import argparse
 from multiprocessing import Process, JoinableQueue
 from wikiexpr import RGX, WIKI_REJECT, ATTR_GEN, ATTR_TYPES_ORDER, clean_expr
@@ -53,7 +53,7 @@ class WiktionaryParser(Process):
         
         if (pgindex):
             self.pgIndex = pgindex
-            self.totalPgs = len(pgindex.keys())
+            self.totalPgs = len(pgindex)
 
     
     def __qinit__(self, input_range=None):
@@ -127,7 +127,7 @@ class WiktionaryParser(Process):
                 self.prune_pagedoc()
                 self.ofile.write("\n")
                 json.dump(self.pgTerm, self.ofile)
-                self.ofile.write(",")
+                #self.ofile.write(",")
                 
             self.inContent = False
             self.inEtym = False
@@ -175,7 +175,7 @@ class WiktionaryParser(Process):
                 self.pgTerm["redirect"] = mo.group("term").split("#")
                 self.empty = False
             except KeyError:
-                print "Unindexed term: ", mo.group("term")
+                print("Unindexed term: ", mo.group("term"))
 
             return True
         
@@ -488,8 +488,8 @@ class WiktionaryParser(Process):
 
 
     def prune_pagedoc(self):
-        for lang in self.pgTerm["langs"].keys():
-            if ("etymology" in self.pgTerm["langs"][lang].keys()):
+        for lang in self.pgTerm["langs"]:
+            if ("etymology" in self.pgTerm["langs"][lang]):
                 if (not self.pgTerm["langs"][lang]["etymology"]["descr"] and not self.pgTerm["langs"][lang]["etymology"]["morph_links"]):
                     del self.pgTerm["langs"][lang]["etymology"]
                 else:
@@ -499,7 +499,7 @@ class WiktionaryParser(Process):
                         del self.pgTerm["langs"][lang]["etymology"]["morph_links"]
 
             clsdellst = []
-            for cls in self.pgTerm["langs"][lang]["meanings"].keys():
+            for cls in self.pgTerm["langs"][lang]["meanings"]:
                 if (not self.pgTerm["langs"][lang]["meanings"][cls]):
                     clsdellst.append(cls)
                 else:
@@ -535,7 +535,7 @@ class WiktionaryParser(Process):
                         del self.pgTerm["langs"][lang][group]
 
         langdellst = []
-        for lang in self.pgTerm["langs"].keys():
+        for lang in self.pgTerm["langs"]:
             if (not self.pgTerm["langs"][lang]):
                 langdellst.append(lang)
 
@@ -569,7 +569,7 @@ class WiktionaryParser(Process):
             self.parse()
             self.queue.task_done()
             
-            print " {0:.4}".format((float(self.numPieces - self.queue.qsize()) / self.numPieces) * 100) + " %"
+            print(" {0:.4}".format((float(self.numPieces - self.queue.qsize()) / self.numPieces) * 100) + " %")
 
         self.ofile.close()
         self.ifile.close()
@@ -596,7 +596,7 @@ def main(args):
     outfiles = [args.ofilebasepath]
 
     if (args.pgindexpath):
-        cPickle.dump(wikparser.pgIndex, open(args.pgindexpath, "wb"), cPickle.HIGHEST_PROTOCOL)
+        pickle.dump(wikparser.pgIndex, open(args.pgindexpath, "wb"), pickle.HIGHEST_PROTOCOL)
 
     if (args.numprocs):
         ifilepath = args.ifilepath
@@ -608,34 +608,34 @@ def main(args):
         queue = JoinableQueue()
         outfiles = []
  
-        for i in xrange(0, numprocs):
+        for i in range(0, numprocs):
             outfile = ofilebasepath + "{:03,d}".format(i)
             WiktionaryParser(queue, ifilepath, outfile, i, numprocs, len(pieces), wikparser.pgIndex).start()
             outfiles.append(outfile)
         
-        for i in xrange(0, len(pieces)):
+        for i in range(0, len(pieces)):
             queue.put((pieces[i][0], pieces[i][1]))
             
         del wikparser
 
-        for i in xrange(0, numprocs):
+        for i in range(0, numprocs):
             queue.put(None)
 
     else:
         wikparser.parse()
 
     queue.join()
-    outcat_filepath = args.ofilebasepath + ".json"
+    outcat_filepath = args.ofilebasepath + ".jsonl"
     with open(outcat_filepath, "w") as outcat_file:
-        outcat_file.write("[\n")
+        #outcat_file.write("[\n")
         for outfile in outfiles:
             with open(outfile) as partout_file:
                 for line in partout_file:
                     outcat_file.write(line)
             os.remove(outfile)
 
-        outcat_file.seek(-1, 1)
-        outcat_file.write("\n]")
+        #outcat_file.seek(-1, 1)
+        #outcat_file.write("\n]")
 
     sort_db(outcat_filepath)
 
