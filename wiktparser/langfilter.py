@@ -2,13 +2,13 @@
 #-*- coding: utf8 -*-
 __author__ = "Danilo S. Carvalho <danilo@jaist.ac.jp>"
 
-import json
+import jsonlines
 import argparse
 
 def main(args):
     print("Loading DB...")
-    with open(args.ifilepath, "r") as wiktdb_file:
-        db = json.load(wiktdb_file)
+    with jsonlines.open(args.ifilepath) as wiktdb_reader:
+        db = list(wiktdb_reader)
     langs = args.langs.split(",")
 
     selected = []
@@ -35,8 +35,8 @@ def main(args):
             selected.append(seldoc)
 
     print("Writing...")
-    with open(args.ifilepath.replace(".json", "") + "_" + "-".join([lang.lower()[0:2] for lang in langs]) + ".json", "w") as filtered_file:
-        json.dump(selected, filtered_file, indent=2)
+    with jsonlines.open(args.ifilepath.replace(".jsonl", "") + "_" + "-".join([lang.lower()[0:2] for lang in langs]) + ".jsonl", mode="w") as filtered_writer:
+        filtered_writer.write_all(selected)
 
 
 def parse_args():

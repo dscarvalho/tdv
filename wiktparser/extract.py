@@ -29,8 +29,8 @@ class WiktionaryParser(Process):
     def __init__(self, queue, ifilename, ofilename, procnum=0, numprocs=1, numpieces=1, pgindex=None):
         Process.__init__(self)
         self.queue = queue
-        self.ifile = open(ifilename, "r", BUFFER_SIZE)
-        self.ofile = open(ofilename, "w", BUFFER_SIZE / OUTPUT_BUFFER_DIV)
+        self.ifile = open(ifilename, "r", BUFFER_SIZE, encoding="utf-8")
+        self.ofile = open(ofilename, "w", BUFFER_SIZE // OUTPUT_BUFFER_DIV, encoding="utf-8")
         self.procNum = procnum
         self.numProcs = numprocs
         self.numPieces = numpieces
@@ -546,7 +546,11 @@ class WiktionaryParser(Process):
     def parse(self):
         while (True):
             end = (self.ifile.tell() >= self.range[1])
-            line = self.ifile.readline()
+            try:
+                line = self.ifile.readline()
+            except UnicodeDecodeError:
+                line = None
+                print("Line decode error:", self.ifile.tell())
             if (not line):
                 break
             
@@ -591,51 +595,52 @@ def divide_set(size, num_pieces):
 
 
 def main(args):
-    wikparser = WiktionaryParser(None, args.ifilepath, args.ofilebasepath)
-    wikparser.init_index()
-    outfiles = [args.ofilebasepath]
+    # wikparser = WiktionaryParser(None, args.ifilepath, args.ofilebasepath)
+    # wikparser.init_index()
+    # outfiles = [args.ofilebasepath]
 
-    if (args.pgindexpath):
-        pickle.dump(wikparser.pgIndex, open(args.pgindexpath, "wb"), pickle.HIGHEST_PROTOCOL)
+    # if (args.pgindexpath):
+    #     pickle.dump(wikparser.pgIndex, open(args.pgindexpath, "wb"), pickle.HIGHEST_PROTOCOL)
 
-    if (args.numprocs):
-        ifilepath = args.ifilepath
-        ofilebasepath = args.ofilebasepath
-        numprocs = args.numprocs
-        entriesperproc = args.entriesperproc
-        inputsize = os.path.getsize(ifilepath)
-        pieces = divide_set(inputsize, numprocs * entriesperproc)
-        queue = JoinableQueue()
-        outfiles = []
+    # if (args.numprocs):
+    #     ifilepath = args.ifilepath
+    #     ofilebasepath = args.ofilebasepath
+    #     numprocs = args.numprocs
+    #     entriesperproc = args.entriesperproc
+    #     inputsize = os.path.getsize(ifilepath)
+    #     pieces = divide_set(inputsize, numprocs * entriesperproc)
+    #     queue = JoinableQueue()
+    #     outfiles = []
  
-        for i in range(0, numprocs):
-            outfile = ofilebasepath + "{:03,d}".format(i)
-            WiktionaryParser(queue, ifilepath, outfile, i, numprocs, len(pieces), wikparser.pgIndex).start()
-            outfiles.append(outfile)
+    #     for i in range(0, numprocs):
+    #         outfile = ofilebasepath + "{:03,d}".format(i)
+    #         WiktionaryParser(queue, ifilepath, outfile, i, numprocs, len(pieces), wikparser.pgIndex).start()
+    #         outfiles.append(outfile)
         
-        for i in range(0, len(pieces)):
-            queue.put((pieces[i][0], pieces[i][1]))
+    #     for i in range(0, len(pieces)):
+    #         queue.put((pieces[i][0], pieces[i][1]))
             
-        del wikparser
+    #     del wikparser
 
-        for i in range(0, numprocs):
-            queue.put(None)
+    #     for i in range(0, numprocs):
+    #         queue.put(None)
 
-    else:
-        wikparser.parse()
+    # else:
+    #     wikparser.parse()
 
-    queue.join()
+    # queue.join()
     outcat_filepath = args.ofilebasepath + ".jsonl"
-    with open(outcat_filepath, "w") as outcat_file:
-        #outcat_file.write("[\n")
-        for outfile in outfiles:
-            with open(outfile) as partout_file:
-                for line in partout_file:
-                    outcat_file.write(line)
-            os.remove(outfile)
+    # with open(outcat_filepath, "w") as outcat_file:
+    #     #outcat_file.write("[\n")
+    #     for outfile in outfiles:
+    #         with open(outfile) as partout_file:
+    #             for line in partout_file:
+    #                 if (line):
+    #                     outcat_file.write(line)
+    #         os.remove(outfile)
 
-        #outcat_file.seek(-1, 1)
-        #outcat_file.write("\n]")
+    #     #outcat_file.seek(-1, 1)
+    #     #outcat_file.write("\n]")
 
     sort_db(outcat_filepath)
 

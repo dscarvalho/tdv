@@ -1,7 +1,7 @@
 #-*- coding: utf8 -*-
 __author__ = "Danilo S. Carvalho <danilo@jaist.ac.jp>"
 
-import json
+import jsonlines
 
 def clean_empty(db):
     cl_db = []
@@ -34,8 +34,8 @@ def clean_empty(db):
 
 def sort_db(wiktdb_path):
     print("Loading DB...")
-    with open(wiktdb_path, "r") as wiktdb_file:
-        db = json.load(wiktdb_file)
+    with jsonlines.open(wiktdb_path, "r") as wiktdb_reader: 
+        db = list(wiktdb_reader)
 
     db = clean_empty(db)
 
@@ -44,5 +44,5 @@ def sort_db(wiktdb_path):
     print("Sorted.")
 
     print("Writing...")
-    with open(wiktdb_path.replace(".json", "") + "_sorted.json", "w") as sorted_file:
-        json.dump(sorted_db, sorted_file, indent=2)
+    with jsonlines.open(wiktdb_path.replace(".jsonl", "") + "_sorted.jsonl", mode="w") as sorted_writer:
+        sorted_writer.write_all(sorted_db)
